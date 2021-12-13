@@ -17,6 +17,11 @@ Aller dans le package: roscd beginner_tutorials
 Créer un dossier scripts
 Mettre son script : nomScript.py
 Ajouter les permissions d'exec: chmod +x scripts/nomScript.py
+Ajouter le script dans CMakeLists.txt dans le pkg: 
+ 'catkin_install_python(PROGRAMS
+   scripts/nom_script.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )'
 Build les nodes des scripts: catkin_make (Dans le workspace)
 Lancer le main: roscore
 cd ~/catkin_ws
