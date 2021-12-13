@@ -1,5 +1,13 @@
-1) package non reconnu
+  Package non reconnu
 Vérifier que le package est reconnu avec "roscd nomPackage" depuis le workspace
 Si il ne l'est pas, build depuis le workspace en utilisant "catkin_make"
 Sourcer le devel avec "source devel/setup.bash"
 Lancer la commande
+
+  Github
+git pull
+(git status)
+(git add)
+git commmit -m "Message Commit"
+git pull
+git push
