@@ -11,3 +11,14 @@ git pull
 git commmit -m "Message Commit"
 git pull
 git push
+  
+  Créer un script:
+Aller dans le package: roscd beginner_tutorials
+Créer un dossier scripts
+Mettre son script : nomScript.py
+Ajouter les permissions d'exec: chmod +x scripts/nomScript.py
+Build les nodes des scripts: catkin_make (Dans le workspace)
+Lancer le main: roscore
+cd ~/catkin_ws
+Source (Voir au dessus)
+Lancer les scripts: rosrun nom_pkg nom_script.py
