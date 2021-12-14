@@ -33,3 +33,5 @@ http://wiki.ros.org/noetic/Installation/Ubuntu
 
   Pour faire bouger le turtlebot, installer ça :
  https://bitbucket.org/imt-mobisyst/mb6-tbot/src/master/
+  Et la commande pour se connecter au turtlebot :
+ roslaunch turtlebot_bringup minimal.launch
