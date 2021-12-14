@@ -27,3 +27,9 @@ Lancer le main: roscore
 cd ~/catkin_ws
 Source (Voir au dessus)
 Lancer les scripts: rosrun nom_pkg nom_script.py
+
+  Pour installer ROS si jamais il est pas sur l'ordi :
+http://wiki.ros.org/noetic/Installation/Ubuntu
+
+  Pour faire bouger le turtlebot, installer ça :
+ https://bitbucket.org/imt-mobisyst/mb6-tbot/src/master/
