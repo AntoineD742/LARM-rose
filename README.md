@@ -1,4 +1,0 @@
-# LARM-rose
-
-# Tes
-#fqzndqkzjdnjkt
