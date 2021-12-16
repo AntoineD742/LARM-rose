@@ -11,26 +11,47 @@ MIN_DISTANCE_X = 0.5
 MIN_DISTANCE_Y = 0.2
 ERROR_RANGE = 0.1
 ANGLE_DE_VUE = 150
-NB_SEQ_TOUR_COMPLET = 126
+NB_SEQ_TOUR_COMPLET = 30
 # Initialize ROS::node
 rospy.init_node('move', anonymous=True)
 
-
+firstMoveOrder = True
+timeToTurn = NB_SEQ_TOUR_COMPLET
+ordre = -1
 def callback(data):
-    ordre = calculObstacles(data)
-    print(ordre)
+    global firstMoveOrder
+    global timeToTurn
+    global ordre
+    #print(firstMoveOrder)
+    if firstMoveOrder:
+        ordre = calculObstacles(data)
+        firstMoveOrder = False
+    #ordre = calculObstacles(data)
     if ordre == 0:
         print("j'avance")
         cmd.linear.x = 0.1
         cmd.angular.z = 0
+        ordre = calculObstacles(data)
     elif ordre == 1:
-        print("obstacle à gauche, tournez à droite")
-        cmd.linear.x = 0
-        cmd.angular.z = -0.5
+        if timeToTurn > 0: #Le robot tourne
+            print("obstacle à gauche, tournez à droite")
+            cmd.linear.x = 0
+            cmd.angular.z = -0.5
+            timeToTurn -=1
+        else: #Le robot a fini de tourner
+            ordre = calculObstacles(data)
+            timeToTurn = NB_SEQ_TOUR_COMPLET
+            print("fin de rotation")
     elif ordre == 2:
-        print("obstacle à droite, tournez à gauche")
-        cmd.linear.x = 0
-        cmd.angular.z = +0.5
+        if timeToTurn > 0: #Le robot tourne
+            print("obstacle à droite, tournez à gauche")
+            cmd.linear.x = 0
+            cmd.angular.z = +0.5
+            timeToTurn -=1
+        else: #Le robot a fini de tourner
+            ordre = calculObstacles(data)
+            timeToTurn = NB_SEQ_TOUR_COMPLET
+            print("fin de rotation")
     commandPublisher.publish(cmd)
 
 
