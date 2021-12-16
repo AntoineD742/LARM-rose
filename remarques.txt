@@ -35,3 +35,11 @@ http://wiki.ros.org/noetic/Installation/Ubuntu
  https://bitbucket.org/imt-mobisyst/mb6-tbot/src/master/
   Et la commande pour se connecter au turtlebot :
  roslaunch turtlebot_bringup minimal.launch
+
+ Pour lancer le laser sur le robot :
+rosrun urg_node urg_node
+rviz
+il faut ajouter le topic /scan, LaserScan
+Il faut mettre Fixed Frame à laser
+
+
