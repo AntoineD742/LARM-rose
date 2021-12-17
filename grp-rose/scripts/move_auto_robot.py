@@ -11,26 +11,30 @@ MIN_DISTANCE_X = 0.5
 MIN_DISTANCE_Y = 0.2
 ERROR_RANGE = 0.1
 ANGLE_DE_VUE = 150
-NB_SEQ_TOUR_COMPLET = 30
+TPS_QUART_DE_TOUR = 30
 # Initialize ROS::node
 rospy.init_node('move', anonymous=True)
 
 firstMoveOrder = True
-timeToTurn = NB_SEQ_TOUR_COMPLET
+timeToTurn = TPS_QUART_DE_TOUR
 ordre = -1
+lastOrder = -2
 def callback(data):
     global firstMoveOrder
     global timeToTurn
     global ordre
+    global lastOrder
     #print(firstMoveOrder)
     if firstMoveOrder:
         ordre = calculObstacles(data)
+        lastOrder = ordre
         firstMoveOrder = False
     #ordre = calculObstacles(data)
     if ordre == 0:
         print("j'avance")
-        cmd.linear.x = 0.1
+        cmd.linear.x = 0.1  
         cmd.angular.z = 0
+        lastOrder = ordre
         ordre = calculObstacles(data)
     elif ordre == 1:
         if timeToTurn > 0: #Le robot tourne
@@ -39,8 +43,13 @@ def callback(data):
             cmd.angular.z = -0.5
             timeToTurn -=1
         else: #Le robot a fini de tourner
+            lastOrder = ordre
             ordre = calculObstacles(data)
-            timeToTurn = NB_SEQ_TOUR_COMPLET
+            if (ordre == 2):
+                print("Demi-tour")
+                timeToTurn = 2*TPS_QUART_DE_TOUR
+            else:
+                timeToTurn = TPS_QUART_DE_TOUR
             print("fin de rotation")
     elif ordre == 2:
         if timeToTurn > 0: #Le robot tourne
@@ -49,9 +58,15 @@ def callback(data):
             cmd.angular.z = +0.5
             timeToTurn -=1
         else: #Le robot a fini de tourner
+            lastOrder = ordre
             ordre = calculObstacles(data)
-            timeToTurn = NB_SEQ_TOUR_COMPLET
+            if (ordre == 1):
+                print("Demi-tour")
+                timeToTurn = 2*TPS_QUART_DE_TOUR
+            else:
+                timeToTurn = TPS_QUART_DE_TOUR
             print("fin de rotation")
+    print("Ordre :" + str(ordre)+ "Dernier ordre: " + str(ordre))
     commandPublisher.publish(cmd)
 
 
@@ -63,7 +78,7 @@ def callback(data):
     #if (min_range < MIN_DISTANCE):
         #cmd.linear.x = 0.0
         #print("je tourne")
-        #if data.header.seq%(2*NB_SEQ_TOUR_COMPLET) < NB_SEQ_TOUR_COMPLET:
+        #if data.header.seq%(2*TPS_QUART_DE_TOUR) < TPS_QUART_DE_TOUR:
             #cmd.angular.z = -0.0
         #else:
             #cmd.angular.z = 0.0

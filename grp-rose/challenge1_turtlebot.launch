@@ -1,8 +1,8 @@
 <launch>
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
+  <node pkg="urg_node" type="urg_node" name="start_laser">
+  </node>
   <node pkg="grp-rose" type="move_auto_robot.py" name="vel_robot"  output="screen">
     <remap from="/cmd_vel_mux/input/navi" to='/cmd_vel_mux/input/navi'/>
   </node>
-    <!--<node pkg="grp-rose" type="scripts/move_auto_robot.py" name="laser_robot"  output="screen">
-    <remap from="/scan" to='/scan'/>
-  </node>-->
 </launch>
