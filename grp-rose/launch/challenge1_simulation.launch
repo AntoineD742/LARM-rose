@@ -2,10 +2,5 @@
   <include file="$(find larm)/launch/challenge-1.launch"/>
   <node pkg="grp-rose" type="move.py" name="move_robot"  output="screen">
     <remap from="cmd_vel" to="cmd_vel"/>
-    <!--<param name="scale_linear" value="0.5" type="double"/>-->
-    <!--<param name="scale_angular" value="1.5" type="double"/>-->
-    <!--<remap from="turtlebot_teleop_keyboard/cmd_vel" to="cmd_vel"/>-->
   </node>
-  <!--<node pkg="stage_ros" type="stageros" name="stage"  output="screen" args="$(find grp-rose)/worlds/world1.world">
-  </node>-->
 </launch>

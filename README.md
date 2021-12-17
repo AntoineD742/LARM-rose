@@ -3,7 +3,6 @@
 Bienvenue sur notre branche concernant le challenge 1 de l'UV LARM !
 
 ## Installation
----------------
 
 Récupérez notre code :
 ``` bash
@@ -16,13 +15,11 @@ git checkout challenge1
 ```
 
 ## Dépendance
----------------
 
 **Attention** pour que tout fonctionne normalement il est nécessaire d'installer sur votre machine le package **`mb6-bot`**. Pour l'installer veuillez suivre les consignes disponibles avec ce lien :
 https://bitbucket.org/imt-mobisyst/mb6-tbot/src/master/
 
 ## Lancement de la simulation
--------
 
 Pour lancer la simulation, éxecutez les commandes suivantes depuis le catkin-workspace :
 ``` bash
@@ -32,7 +29,6 @@ roslaunch grp-rose challenge1_simulation.launch
 ```
 
 ## Mise en route du robot
--------
 
 Pour mettre en route le robot, éxecutez les commandes suivantes depuis le catkin-workspace :
 ``` bash
