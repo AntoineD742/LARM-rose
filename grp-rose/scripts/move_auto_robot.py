@@ -7,11 +7,14 @@ import math, rospy, random
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 
-MIN_DISTANCE_X = 0.5
+MIN_DISTANCE_X = 0.25
 MIN_DISTANCE_Y = 0.2
 ERROR_RANGE = 0.1
 ANGLE_DE_VUE = 150
 TPS_QUART_DE_TOUR = 30
+behindTheRobot = 50 #On set la distance des objets derrière le laser à un nombre infiniment grand
+vitesseRobot = 0.1
+vitesseRotationRobot = 0.5
 # Initialize ROS::node
 rospy.init_node('move', anonymous=True)
 
@@ -32,7 +35,7 @@ def callback(data):
     #ordre = calculObstacles(data)
     if ordre == 0:
         print("j'avance")
-        cmd.linear.x = 0.1  
+        cmd.linear.x = vitesseRobot 
         cmd.angular.z = 0
         lastOrder = ordre
         ordre = calculObstacles(data)
@@ -40,7 +43,7 @@ def callback(data):
         if timeToTurn > 0: #Le robot tourne
             print("obstacle à gauche, tournez à droite")
             cmd.linear.x = 0
-            cmd.angular.z = -0.5
+            cmd.angular.z = -vitesseRotationRobot
             timeToTurn -=1
         else: #Le robot a fini de tourner
             lastOrder = ordre
@@ -55,7 +58,7 @@ def callback(data):
         if timeToTurn > 0: #Le robot tourne
             print("obstacle à droite, tournez à gauche")
             cmd.linear.x = 0
-            cmd.angular.z = +0.5
+            cmd.angular.z = +vitesseRotationRobot
             timeToTurn -=1
         else: #Le robot a fini de tourner
             lastOrder = ordre
@@ -103,10 +106,14 @@ def calculObstacles(data):
         angle+= data.angle_increment
     #for obstacle in obstacles[round((len(obstacles)/2)-ANGLE_DE_VUE):round((len(obstacles)/2)+ANGLE_DE_VUE)]:
     for obstacle in obstacles:
-        distances.append(math.sqrt(obstacle[0]**2 + obstacle[1]**2))
+        if obstacle[0] < 0:
+            distances.append(behindTheRobot)
+        else:
+            distances.append(math.sqrt(obstacle[0]**2 + obstacle[1]**2))
         index_min = distances.index(min(distances))
     #print(distances)
-    if obstacles[index_min][0] < MIN_DISTANCE_X:
+    print("gggggggggggggggggg" + str(obstacles[index_min][0]))
+    if obstacles[index_min][0] < MIN_DISTANCE_X and obstacles[index_min][0] > 0:
         if 0 <= obstacles[index_min][1] < MIN_DISTANCE_Y:
             print(obstacles[index_min])
             return 1                            # obstacle à gauche, tournez à droite
