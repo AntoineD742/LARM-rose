@@ -7,12 +7,12 @@ Bienvenue sur notre branche concernant le challenge 1 de l'UV LARM !
 
 Récupérez notre code :
 ``` bash
-$ git clone https://github.com/AntoineD7420/LARM-rose
+git clone https://github.com/AntoineD7420/LARM-rose
 ```
 
 Passez sur la branche challenge1 :
 ``` bash
-$ git checkout challenge1
+git checkout challenge1
 ```
 
 ## Dépendance
@@ -26,9 +26,9 @@ https://bitbucket.org/imt-mobisyst/mb6-tbot/src/master/
 
 Pour lancer la simulation, éxecutez les commandes suivantes depuis le catkin-workspace :
 ``` bash
-$ catkin_make
-$ source devel/setup.bash
-$ roslaunch grp-rose challenge1_simulation.launch
+catkin_make
+source devel/setup.bash
+roslaunch grp-rose challenge1_simulation.launch
 ```
 
 ## Mise en route du robot
@@ -36,7 +36,7 @@ $ roslaunch grp-rose challenge1_simulation.launch
 
 Pour mettre en route le robot, éxecutez les commandes suivantes depuis le catkin-workspace :
 ``` bash
-$ catkin_make
-$ source devel/setup.bash
-$ roslaunch grp-rose challenge1_turtlebot.launch
+catkin_make
+source devel/setup.bash
+roslaunch grp-rose challenge1_turtlebot.launch
 ```
