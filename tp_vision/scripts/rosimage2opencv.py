@@ -25,10 +25,13 @@ class image_converter:
       #Conversion Alex Antoine
       cv_image = cv2.convertScaleAbs(cv_image, alpha=0.1)
       
+      # Accès pixel central
+      # print(cv_image[240,424])
+
     except CvBridgeError as e:
       print(e)
-
-    print(cv_image)
+    
+    # Suppression channels (Antoine Alex)
     (rows,cols) = cv_image.shape
     if cols > 60 and rows > 60 :
       cv2.circle(cv_image, (50,50), 10, 255)
