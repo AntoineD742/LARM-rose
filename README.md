@@ -1,11 +1,15 @@
-# UV LARM
+# Challenge 2
 
-## Groupe rose
+Bienvenue sur notre branche concernant le challenge 2 de l'UV LARM !
 
-### Branches
+## Installation
 
-- Branche challenge 1
+Récupérez notre code :
+``` bash
+git clone https://github.com/AntoineD7420/LARM-rose
+```
 
-```bash
-git checkout challenge1
+Passez sur la branche challenge2 :
+``` bash
+git checkout challenge2
 ```
