@@ -22,7 +22,7 @@ hiRuban = np.array([255, 100, 255])
 
 
 #Recup image
-img_color = cv2.imread("../data/bouteilles/bouteille3.jpg")
+img_color = cv2.imread("../data/bouteilles/bouteille5.jpg")
 
 
 #calculs
@@ -66,12 +66,16 @@ while True:
 
     img_result=cv2.bitwise_and(img_color, img_color, mask= mask)
 
+    #FILLING HOLE ET ELIMINATION DES AUTRES FORMES ???
+
+
+
     #Affichage
     cv2.imshow('color image',img_color)  
-    cv2.imshow('HSV image',img_hsv)  
-    cv2.imshow('Mask Ruban',maskRuban)  
-    cv2.imshow('Mask Badge',maskBadge)  
-    cv2.imshow('Mask Resultat',mask)  
+    #cv2.imshow('HSV image',img_hsv)  
+    #cv2.imshow('Mask Ruban',maskRuban)  
+    #cv2.imshow('Mask Badge',maskBadge)  
+    #cv2.imshow('Mask Resultat',mask)  
     cv2.imshow('Result',img_result)  
     #cv2.imshow('Result2',img_result2)  
     
