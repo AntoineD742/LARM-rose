@@ -1,10 +1,12 @@
 <launch>
   <group if="$(arg rviz)">
+  <!-- stuff that will only be evaluated if foo is true   scan:=base_scan-->
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find slam_tuto)/rviz_config/configChallenge2.rviz"/>
   </group>
   <param name="rviz" value="false" unless="$(arg rviz)" />
-  <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" args="scan:=scan">
-    <param name="maxUrange" value="4.0"/> <!-- limit laser range to 4 meters -->
-  </node>
+  <node pkg="slam_tuto" type="turtlebot_teleop_key.py" name="turtlebot_teleop_keyboard"  output="screen"/>
+  <node pkg="gmapping" type="slam_gmapping" name="gmapping_node"
+   args="scan:=base_scan" />
   <node pkg="tf" type="static_transform_publisher" name="scan_broadcaster" args="1 0 0 0 0 0 1 base_footprint laser 100" />
+
 </launch>
