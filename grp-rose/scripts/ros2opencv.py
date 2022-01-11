@@ -14,9 +14,9 @@ class depth_image_converter:
 
   def __init__(self):
     self.depth_pub = rospy.Publisher("depth_topic",Image, queue_size=10)
-
     self.bridge = CvBridge()
     self.depth_sub = rospy.Subscriber("/camera/depth/image_rect_raw",Image,self.callbackDepth)
+    self.test = 12
     
   def callbackDepth(self,data):
     try:
@@ -24,22 +24,10 @@ class depth_image_converter:
 
       #Conversion Alex Antoine
       cv_image = cv2.convertScaleAbs(cv_image, alpha=0.1)
-      
+      cv2.imshow("Depth", cv_image)
+      cv2.waitKey(3)
       # Accès pixel central
       # print(cv_image[240,424])
-
-    except CvBridgeError as e:
-      print(e)
-    
-    # Suppression channels (Antoine Alex)
-    (rows,cols) = cv_image.shape
-    if cols > 60 and rows > 60 :
-      cv2.circle(cv_image, (50,50), 10, 255)
-
-    cv2.imshow("Depth", cv_image)
-    cv2.waitKey(3)
-
-    try:
       self.depth_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "passthrough"))
     except CvBridgeError as e:
       print(e)
@@ -55,26 +43,14 @@ class color_image_converter:
 
   def callbackColor(self,data):
     try:
-      cv_image = self.bridge.imgmsg_to_cv2(data, "passthrough")
+      cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
 
-      
+      cv2.imshow("Color", cv_image)
+      cv2.waitKey(3)
       # Accès pixel central
       # print(cv_image[240,424])
+      self.color_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
 
-    except CvBridgeError as e:
-      print(e)
-    
-
-    (rows,cols,channels) = cv_image.shape
-    if cols > 60 and rows > 60 :
-      cv2.circle(cv_image, (50,50), 10, 255)
-
-
-    cv2.imshow("Color", cv_image)
-    cv2.waitKey(3)
-
-    try:
-      self.color_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "passthrough"))
     except CvBridgeError as e:
       print(e)
 
