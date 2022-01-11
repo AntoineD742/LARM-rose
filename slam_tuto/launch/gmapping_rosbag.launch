@@ -1,9 +1,11 @@
 <launch>
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
   <group if="$(arg rviz)">
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find slam_tuto)/rviz_config/configChallenge2.rviz"/>
   </group>
   <param name="rviz" value="false" unless="$(arg rviz)" />
-  <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" args="scan:=scan">
+  <!-- Mvt robot assuré par le rosbag -->
+  <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" args="scan:=scan"> <!--  Scan ou base_scan ???, il faut faire un rostopic echo-->
     <param name="maxUrange" value="4.0"/> <!-- limit laser range to 4 meters -->
   </node>
   <node pkg="tf" type="static_transform_publisher" name="scan_broadcaster" args="1 0 0 0 0 0 1 base_footprint laser 100" />
