@@ -15,14 +15,14 @@ hiBadge=np.array([6, 255, 255])
 lowRuban = np.array([0, 0, 230]) 
 hiRuban = np.array([255, 100, 255])
 
-Threshold_Param = 50
+Threshold_Param = 100
 
 
 class image_converter:
 
     def __init__(self):
         self.bridge = CvBridge()
-        self.depth_sub = rospy.Subscriber("/camera/depth/image_rect_raw",Image,self.callbackDepth)
+        self.depth_sub = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw",Image,self.callbackDepth)
         self.color_sub = rospy.Subscriber("/camera/color/image_raw",Image,self.callbackColor)
 
         self.color_map = None
@@ -48,10 +48,24 @@ class image_converter:
             self.depth_map = cv2.convertScaleAbs(self.depth_map, alpha=0.1)
 
             #Threshold depth
-            discarded, self.depth_map = cv2.threshold(self.depth_map,Threshold_Param,255,cv2.THRESH_BINARY)
+            discarded, maskProfondeur = cv2.threshold(self.depth_map,Threshold_Param,255,cv2.THRESH_BINARY)
+            maskProfondeur = cv2.merge([maskProfondeur,maskProfondeur,maskProfondeur])
+            maskProfondeur=cv2.inRange(maskProfondeur, 0 , 254)
+            #maskProfondeur = cv2.bitwise_not(maskProfondeur)
+            
+            #Crop image couleur
+            # half_width_depth = int(self.depth_map.shape[1] / 2)
+            # half_height_depth = int(self.depth_map.shape[0] / 2)
+            # centre_couleur = self.color_map.shape 
+            # centre_couleur_x = int(centre_couleur[1] / 2)
+            # centre_couleur_y = int(centre_couleur[0] / 2)
+            # cropped_color_map = self.color_map[centre_couleur_y - half_height_depth : centre_couleur_y + half_height_depth, centre_couleur_x - half_width_depth: centre_couleur_x + half_width_depth]
 
-            #Conversion couleur
-            img_hsv = cv2.cvtColor(self.color_map, cv2.COLOR_BGR2HSV)
+            #Application du seuil de profondeur à l'image RGB
+            thresholded_color = cv2.bitwise_and(self.color_map, self.color_map, mask= maskProfondeur)
+
+            #Conversion couleur en HSV
+            img_hsv = cv2.cvtColor(thresholded_color, cv2.COLOR_BGR2HSV)
 
             #Mask Badge (Double seuillage puis amelioration)
             maskBadge=cv2.inRange(img_hsv, lowBadge, hiBadge)
@@ -66,13 +80,20 @@ class image_converter:
             #Combinaison des masks
             mask = cv2.add(maskBadge, maskRuban)
 
+
             #Extraction des zones d'interets
-            img_result=cv2.bitwise_and(self.color_map, self.color_map, mask= mask)
+            img_result=cv2.bitwise_and(thresholded_color, thresholded_color, mask= mask)
             
             #Affichage
             cv2.imshow("Depth", self.depth_map)
             cv2.waitKey(3)
-            cv2.imshow("Color", img_result)
+            cv2.imshow("Color", self.color_map)
+            cv2.waitKey(3)
+            cv2.imshow("maskProfondeur", maskProfondeur)
+            cv2.waitKey(3)
+            cv2.imshow("Thres color", thresholded_color)
+            cv2.waitKey(3)
+            cv2.imshow("Result", img_result)
             cv2.waitKey(3)
 
 def main(args):
