@@ -7,8 +7,8 @@ def generate_negative_description_file():
             f.write('negatifs/' + filename + '\n')
 
 #cascade_name=cv2.CascadeClassifier('cascade.xml')
-object_cascade=cv2.CascadeClassifier('bottle.xml')
-print(os.path.exists('bottle.xml'))
+object_cascade=cv2.CascadeClassifier('cascade.xml')
+print(os.path.exists('cascade.xml'))
 #object_cascade=cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 #if not object_cascade.load(cascade_name):
 #    print('--(!)Error loading face cascade')
