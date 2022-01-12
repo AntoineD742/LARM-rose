@@ -15,6 +15,12 @@ hiBadge=np.array([6, 255, 255])
 lowRuban = np.array([0, 0, 230]) 
 hiRuban = np.array([255, 100, 255])
 
+# lowOrangeBottle = np.array([0, 180, 200]) 
+lowOrangeBottle = np.array([0, 200, 200]) 
+# hiOrangeBottle = np.array([25, 255, 255])
+hiOrangeBottle = np.array([25, 255, 255])
+#HSV: 85 110 ; 240 255, 230 , 255
+
 Threshold_Param = 100
 
 
@@ -68,18 +74,24 @@ class image_converter:
             img_hsv = cv2.cvtColor(thresholded_color, cv2.COLOR_BGR2HSV)
 
             #Mask Badge (Double seuillage puis amelioration)
-            maskBadge=cv2.inRange(img_hsv, lowBadge, hiBadge)
-            maskBadge=cv2.erode(maskBadge, None, iterations=1)
-            maskBadge=cv2.dilate(maskBadge, None, iterations=1)
+            # maskBadge=cv2.inRange(img_hsv, lowBadge, hiBadge)
+            # maskBadge=cv2.erode(maskBadge, None, iterations=1)
+            # maskBadge=cv2.dilate(maskBadge, None, iterations=1)
 
             #Mask Ruban (Double seuillage puis amelioration)
-            maskRuban=cv2.inRange(img_hsv, lowRuban, hiRuban)
+            maskRuban=cv2.inRange(img_hsv, lowRuban, hiRuban)   
             maskRuban=cv2.erode(maskRuban, None, iterations=1)
             maskRuban=cv2.dilate(maskRuban, None, iterations=1)
 
-            #Combinaison des masks
-            mask = cv2.add(maskBadge, maskRuban)
 
+            #Mask bouteille orange
+            maskBouteilleOrange=cv2.inRange(img_hsv, lowOrangeBottle, hiOrangeBottle)
+            maskBouteilleOrange=cv2.erode(maskBouteilleOrange, None, iterations=1)
+            maskBouteilleOrange=cv2.dilate(maskBouteilleOrange, None, iterations=1)
+            #Combinaison des masks
+            # mask = cv2.add(maskRuban, maskBouteilleOrange)
+            # mask = cv2.add(maskBadge, maskRuban)
+            mask = maskBouteilleOrange
 
             #Extraction des zones d'interets
             img_result=cv2.bitwise_and(thresholded_color, thresholded_color, mask= mask)
