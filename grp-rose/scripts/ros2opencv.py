@@ -14,9 +14,9 @@ class depth_image_converter:
 
   def __init__(self):
     self.depth_pub = rospy.Publisher("depth_topic",Image, queue_size=10)
-
     self.bridge = CvBridge()
     self.depth_sub = rospy.Subscriber("/camera/depth/image_rect_raw",Image,self.callbackDepth)
+    self.test = 12
     
   def callbackDepth(self,data):
     try:
@@ -53,6 +53,8 @@ class color_image_converter:
 
     except CvBridgeError as e:
       print(e)
+
+
 
 
 
