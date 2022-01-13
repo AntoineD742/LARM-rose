@@ -128,8 +128,8 @@ class image_converter:                                          # CHANGER LE NO
 
                     self.camera.fromCameraInfo(self.camera_info)
                     distance_from_camera = self.depth_map[contours[0][0][0][1], contours[0][0][0][0]]
-                    coord_map = self.camera.projectPixelTo3dRay((contours[0][0][0][1], contours[0][0][0][0]))
-                    coord_map *= distance_from_camera
+                    coord_map = self.camera.projectPixelTo3dRay((contours[0][0][0][0], contours[0][0][0][1]))
+                    # coord_map *= distance_from_camera
                     self.coord_bottles.x = coord_map[0]
                     self.coord_bottles.y = coord_map[1]
                     self.coord_bottles.z = 0.05
