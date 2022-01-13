@@ -25,7 +25,17 @@ Threshold_Param = 100
 
 NBR_PIXEL_DETECTION_BOUTEILLE_ORANGE = 5000
 
-class image_converter:
+class bottle:
+    def __init__(self):
+        self.x_img = None
+        self.y_img = None
+        self.x_relative = None
+        self.y_relative = None
+        self.x_map = None
+        self.y_map = None
+
+
+class image_converter:                                          # CHANGER LE NOM
 
     def __init__(self):
         self.bridge = CvBridge()
@@ -35,6 +45,8 @@ class image_converter:
 
         self.color_map = None
         self.depth_map = None
+
+    
 
     def callbackDepth(self,data):
         try:
@@ -59,16 +71,7 @@ class image_converter:
             discarded, maskProfondeur = cv2.threshold(self.depth_map,Threshold_Param,255,cv2.THRESH_BINARY)
             maskProfondeur = cv2.merge([maskProfondeur,maskProfondeur,maskProfondeur])
             maskProfondeur=cv2.inRange(maskProfondeur, 0 , 254)
-            #maskProfondeur = cv2.bitwise_not(maskProfondeur)
             
-            #Crop image couleur
-            # half_width_depth = int(self.depth_map.shape[1] / 2)
-            # half_height_depth = int(self.depth_map.shape[0] / 2)
-            # centre_couleur = self.color_map.shape 
-            # centre_couleur_x = int(centre_couleur[1] / 2)
-            # centre_couleur_y = int(centre_couleur[0] / 2)
-            # cropped_color_map = self.color_map[centre_couleur_y - half_height_depth : centre_couleur_y + half_height_depth, centre_couleur_x - half_width_depth: centre_couleur_x + half_width_depth]
-
             #Application du seuil de profondeur à l'image RGB
             thresholded_color = cv2.bitwise_and(self.color_map, self.color_map, mask= maskProfondeur)
 
@@ -97,18 +100,6 @@ class image_converter:
 
             #Extraction des zones d'interets
             img_result=cv2.bitwise_and(thresholded_color, thresholded_color, mask= mask)
-            
-            # grayCountours = cv2.cvtColor(img_result, cv2.COLOR_BGR2GRAY)
-
-            # discarded, grayCountours = cv2.threshold(grayCountours, 0, 255, cv2.THRESH_BINARY)
-
-            #Detections des contours
-            #contours, hierarchy = cv2.findContours(grayCountours, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-
-            # cv2.drawContours(grayCountours, contours, -1, (0,255,0), 3)
-            
-
             #Detection pixels oranges (Tri par taille)
             grayCounter = cv2.cvtColor(img_result, cv2.COLOR_BGR2GRAY)
             
@@ -116,15 +107,16 @@ class image_converter:
             if nbrPixelsDetectes > NBR_PIXEL_DETECTION_BOUTEILLE_ORANGE: #Critere max de taille?
                 contours, hierarchy = cv2.findContours(grayCounter, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
                 if len(contours) <  10:
-                    self.bottle_pub.publish("BOUTEILLE DETECTEE")
-                    # MELANGER LES COUNTOURS / EN CHOISIR UN SEUL
+                    #Get depth
+                    #contours[0][0]  --> Coordonnees images
+                    #depth_map[contours[0][0][0], contours[0][0][1]]   --> Depth
+                    # rs
+                    
+                    self.bottle_pub.publish(str(depth_map[contours[0][0][0], contours[0][0][1]]))
                     # AVOIR LES COORDONNEES D'UNE BOUTEILLE
+                    # MELANGER LES COUNTOURS / EN CHOISIR UN SEUL
                     # PUBLISH SUR LE TOPIC
                     # VERIFIER QU'UNE BOUTEILLE NE SE TROUVE PAS DEJA ICI
-
-                # else:
-                #     self.bottle_pub.publish(str(len(contours)))
-                #Recuperer coordonnées bouteilles
                 
 
             #Affichage
