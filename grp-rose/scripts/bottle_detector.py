@@ -23,6 +23,7 @@ hiOrangeBottle = np.array([25, 255, 255])
 
 Threshold_Param = 100
 
+NBR_PIXEL_DETECTION_BOUTEILLE_ORANGE = 5000
 
 class image_converter:
 
@@ -30,6 +31,7 @@ class image_converter:
         self.bridge = CvBridge()
         self.depth_sub = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw",Image,self.callbackDepth)
         self.color_sub = rospy.Subscriber("/camera/color/image_raw",Image,self.callbackColor)
+        self.bottle_pub = rospy.Publisher("/bottle", String, queue_size = 10)
 
         self.color_map = None
         self.depth_map = None
@@ -96,6 +98,35 @@ class image_converter:
             #Extraction des zones d'interets
             img_result=cv2.bitwise_and(thresholded_color, thresholded_color, mask= mask)
             
+            # grayCountours = cv2.cvtColor(img_result, cv2.COLOR_BGR2GRAY)
+
+            # discarded, grayCountours = cv2.threshold(grayCountours, 0, 255, cv2.THRESH_BINARY)
+
+            #Detections des contours
+            #contours, hierarchy = cv2.findContours(grayCountours, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+
+            # cv2.drawContours(grayCountours, contours, -1, (0,255,0), 3)
+            
+
+            #Detection pixels oranges (Tri par taille)
+            grayCounter = cv2.cvtColor(img_result, cv2.COLOR_BGR2GRAY)
+            
+            nbrPixelsDetectes = cv2.countNonZero(grayCounter)
+            if nbrPixelsDetectes > NBR_PIXEL_DETECTION_BOUTEILLE_ORANGE: #Critere max de taille?
+                contours, hierarchy = cv2.findContours(grayCounter, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                if len(contours) <  10:
+                    self.bottle_pub.publish("BOUTEILLE DETECTEE")
+                    # MELANGER LES COUNTOURS / EN CHOISIR UN SEUL
+                    # AVOIR LES COORDONNEES D'UNE BOUTEILLE
+                    # PUBLISH SUR LE TOPIC
+                    # VERIFIER QU'UNE BOUTEILLE NE SE TROUVE PAS DEJA ICI
+
+                # else:
+                #     self.bottle_pub.publish(str(len(contours)))
+                #Recuperer coordonnées bouteilles
+                
+
             #Affichage
             # cv2.imshow("Depth", self.depth_map)
             # cv2.waitKey(3)
@@ -107,6 +138,7 @@ class image_converter:
             # cv2.waitKey(3)
             cv2.imshow("Result", img_result)
             cv2.waitKey(3)
+            
 
 def main(args):
   ic = image_converter()
