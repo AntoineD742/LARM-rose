@@ -105,6 +105,14 @@ Visualization Manager:
       Unreliable: false
       Use Timestamp: false
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: visualization_marker
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -169,5 +177,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1200
-  X: 22
-  Y: -22
+  X: 455
+  Y: 26
