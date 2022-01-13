@@ -97,14 +97,14 @@ class image_converter:
             img_result=cv2.bitwise_and(thresholded_color, thresholded_color, mask= mask)
             
             #Affichage
-            cv2.imshow("Depth", self.depth_map)
-            cv2.waitKey(3)
+            # cv2.imshow("Depth", self.depth_map)
+            # cv2.waitKey(3)
             cv2.imshow("Color", self.color_map)
             cv2.waitKey(3)
-            cv2.imshow("maskProfondeur", maskProfondeur)
-            cv2.waitKey(3)
-            cv2.imshow("Thres color", thresholded_color)
-            cv2.waitKey(3)
+            # cv2.imshow("maskProfondeur", maskProfondeur)
+            # cv2.waitKey(3)
+            # cv2.imshow("Thres color", thresholded_color)
+            # cv2.waitKey(3)
             cv2.imshow("Result", img_result)
             cv2.waitKey(3)
 

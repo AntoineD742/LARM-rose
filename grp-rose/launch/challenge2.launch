@@ -4,4 +4,6 @@
   <!-- Mvt robot assuré par le rosbag -->
   <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" args="scan:=scan" /> <!--  Scan ou base_scan ???, il faut faire un rostopic echo-->
   <node pkg="tf" type="static_transform_publisher" name="scan_broadcaster" args="1 0 0 0 0 0 1 base_footprint laser 100" />
+  <node pkg="grp-rose" type="bottle_detector.py" name="bottle_detector" />
+  <!-- <node pkg="grp-rose" type="marker.py" name="marker" /> -->
 </launch>
