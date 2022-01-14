@@ -25,7 +25,8 @@ hiOrangeBottle = np.array([25, 255, 255])
 
 Threshold_Param = 100
 
-NBR_PIXEL_DETECTION_BOUTEILLE_ORANGE = 5000
+NBR_PIXEL_MIN_DETECTION_BOUTEILLE_ORANGE = 5000
+NBR_PIXEL_MAX_DETECTION_BOUTEILLE_ORANGE = 20000
 
 # class bottle:
 #     def __init__(self):
@@ -112,27 +113,37 @@ class image_converter:                                          # CHANGER LE NO
             img_result=cv2.bitwise_and(thresholded_color, thresholded_color, mask= mask)
             #Detection pixels oranges (Tri par taille)
             grayCounter = cv2.cvtColor(img_result, cv2.COLOR_BGR2GRAY)
-            
+
             nbrPixelsDetectes = cv2.countNonZero(grayCounter)
-            if nbrPixelsDetectes > NBR_PIXEL_DETECTION_BOUTEILLE_ORANGE: #Critere max de taille?
+            if nbrPixelsDetectes > NBR_PIXEL_MIN_DETECTION_BOUTEILLE_ORANGE and nbrPixelsDetectes < NBR_PIXEL_MAX_DETECTION_BOUTEILLE_ORANGE: #Critere max de taille?
                 contours, hierarchy = cv2.findContours(grayCounter, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-                if len(contours) <  10:
-                    #Get depth
-                    #contours[0][0]  --> Coordonnees images
-                    #depth_map[contours[0][0][0], contours[0][0][1]]   --> Depth
-                    # rs
-                    #dist = depth_copy.get_distance(x, y)
+                #grayCounter = cv2.drawContours(self.color_map, contours, -1, (0,255,0), -1)
+                # rospy.loginfo("Nbr contours: %s", len(contours))
+                if len(contours) <  10 and len(contours) > 0:
+                    #On trouve un nombre faible de contours, on fusionne les contours avec un blur 
+                    grayCounter=cv2.erode(grayCounter, None, iterations=9)
+                    grayCounter=cv2.dilate(grayCounter, None, iterations=9)
+                    contours, hierarchy = cv2.findContours(grayCounter, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                    
+                    bbox_bottle = cv2.boundingRect(contours[0])
+                    x_cnt_bottle = int(bbox_bottle[0] + bbox_bottle[2] // 2)
+                    y_cnt_bottle = int(bbox_bottle[1] + bbox_bottle[3] // 2)
+                    center_bottle = (x_cnt_bottle, y_cnt_bottle)
 
-                    #self.bottle_pub.publish(str(contours[0][0][0][1]))
-
+                    #SUPPRIMER LES 4 LIGNES EN DESSOUS
+                    radius = 10
+                    color = (255, 0, 0)
+                    thickness = 2
+                    image = cv2.circle(img_result, center_bottle, radius, color, thickness)
 
                     self.camera.fromCameraInfo(self.camera_info)
-                    distance_from_camera = self.depth_map[contours[0][0][0][1], contours[0][0][0][0]]
-                    coord_map = self.camera.projectPixelTo3dRay((contours[0][0][0][0], contours[0][0][0][1]))
-                    # coord_map *= distance_from_camera
+                    distance_from_camera = self.depth_map[y_cnt_bottle, x_cnt_bottle]
+                    coord_map = self.camera.projectPixelTo3dRay(center_bottle)
+                    # MULTPILCATION PAR LA DISTANCE ???????????????????????
                     self.coord_bottles.x = coord_map[0]
                     self.coord_bottles.y = coord_map[1]
                     self.coord_bottles.z = 0.05
+                    
                     self.bottle_pub.publish(self.coord_bottles)
 
 
@@ -150,8 +161,8 @@ class image_converter:                                          # CHANGER LE NO
             cv2.waitKey(3)
             # cv2.imshow("maskProfondeur", maskProfondeur)
             # cv2.waitKey(3)
-            # cv2.imshow("Thres color", thresholded_color)
-            # cv2.waitKey(3)
+            cv2.imshow("grayCounter", grayCounter)
+            cv2.waitKey(3)
             cv2.imshow("Result", img_result)
             cv2.waitKey(3)
             
