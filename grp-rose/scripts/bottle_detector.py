@@ -44,7 +44,7 @@ class image_converter:                                          # CHANGER LE NO
         self.bridge = CvBridge()
         self.depth_sub = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw",Image,self.callbackDepth)
         self.color_sub = rospy.Subscriber("/camera/color/image_raw",Image,self.callbackColor)
-        self.bottle_pub = rospy.Publisher("/bottle", Vector3, queue_size = 10)
+        self.bottle_pub = rospy.Publisher("/coord_bottle", Vector3, queue_size = 10)
 
         self.color_map = None
         self.depth_map = None
