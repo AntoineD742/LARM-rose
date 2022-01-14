@@ -10,12 +10,12 @@
 #####################################################################################################################################################################
 from __future__ import print_function
 import sys
-import rospy
+import rospy, tf
 import cv2
 import numpy as np
 import image_geometry
 from std_msgs.msg import String
-from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import Vector3, PoseStamped
 from sensor_msgs.msg import Image, CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -52,7 +52,8 @@ class bottleFinder:
         self.bridge = CvBridge()            #Conversion Images OpenCV-ROS
         self.depth_sub = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw",Image,self.callbackDepth)  #Recuperation image de profondeur (Alignée)
         self.color_sub = rospy.Subscriber("/camera/color/image_raw",Image,self.callbackColor)                   #Recuperation image RGB
-        self.bottle_pub = rospy.Publisher("/coord_bottle", Vector3, queue_size = 10)                            #Envoi a /coor_bottle
+        # self.bottle_pub = rospy.Publisher("/coord_bottle", Vector3, queue_size = 10)                            #Envoi a /coor_bottle
+        self.bottle_pub = rospy.Publisher("/coord_bottle", PoseStamped, queue_size = 10)                            #Envoi a /coor_bottle
 
         self.color_map = None   #Framde Depth
         self.depth_map = None   #Frame Color
@@ -62,7 +63,7 @@ class bottleFinder:
         self.camera_info = CameraInfo()
         self.camera_sub = rospy.Subscriber("/camera/color/camera_info",CameraInfo,self.callbackCamera)
 
-        self.coord_bottles = Vector3()  #Donnee à envoyer à /coord_bottle
+        self.coord_bottles = PoseStamped()  #Donnee à envoyer à /coord_bottle
 
     def callbackCamera(self, data):
         #???????????????????????????????????????????????????????????????????????????????????????????????
@@ -155,9 +156,18 @@ class bottleFinder:
                     self.camera.fromCameraInfo(self.camera_info)
                     distance_from_camera = self.depth_map[y_cnt_bottle, x_cnt_bottle]/1000
                     coord_map = (self.camera.projectPixelTo3dRay(center_bottle))
-                    self.coord_bottles.x = coord_map[0]*distance_from_camera
-                    self.coord_bottles.y = coord_map[1]*distance_from_camera
-                    self.coord_bottles.z = coord_map[2]*distance_from_camera
+
+                    self.coord_bottles.header.frame_id = "camera_color_optical_frame"
+
+                    self.coord_bottles.pose.position.x = coord_map[0]*distance_from_camera
+                    self.coord_bottles.pose.position.y = coord_map[1]*distance_from_camera
+                    self.coord_bottles.pose.position.z = coord_map[2]*distance_from_camera
+
+                    quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, 0.0)
+                    self.coord_bottles.pose.orientation.x = quaternion[0]
+                    self.coord_bottles.pose.orientation.y = quaternion[1]
+                    self.coord_bottles.pose.orientation.z = quaternion[2]
+                    self.coord_bottles.pose.orientation.w = quaternion[3]
                     
                     #Envoi des coordonnées
                     self.bottle_pub.publish(self.coord_bottles)
