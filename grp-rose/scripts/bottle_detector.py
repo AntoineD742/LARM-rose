@@ -138,11 +138,11 @@ class image_converter:                                          # CHANGER LE NO
 
                     self.camera.fromCameraInfo(self.camera_info)
                     distance_from_camera = self.depth_map[y_cnt_bottle, x_cnt_bottle]/1000
-                    coord_map = self.camera.projectPixelTo3dRay(center_bottle)
+                    coord_map = (self.camera.projectPixelTo3dRay(center_bottle))
                     # MULTPILCATION PAR LA DISTANCE ???????????????????????
                     self.coord_bottles.x = coord_map[0]*distance_from_camera
                     self.coord_bottles.y = coord_map[1]*distance_from_camera
-                    self.coord_bottles.z = 0.05
+                    self.coord_bottles.z = coord_map[2]*distance_from_camera
                     
                     self.bottle_pub.publish(self.coord_bottles)
 
