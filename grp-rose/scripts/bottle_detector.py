@@ -4,8 +4,10 @@ import sys
 import rospy
 import cv2
 import numpy as np
+import image_geometry
 from std_msgs.msg import String
-from sensor_msgs.msg import Image
+from geometry_msgs.msg import Vector3
+from sensor_msgs.msg import Image, CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
 
 #Constantes seuils
@@ -25,14 +27,14 @@ Threshold_Param = 100
 
 NBR_PIXEL_DETECTION_BOUTEILLE_ORANGE = 5000
 
-class bottle:
-    def __init__(self):
-        self.x_img = None
-        self.y_img = None
-        self.x_relative = None
-        self.y_relative = None
-        self.x_map = None
-        self.y_map = None
+# class bottle:
+#     def __init__(self):
+#         self.x_img = None
+#         self.y_img = None
+#         self.x_relative = None
+#         self.y_relative = None
+#         self.x_map = None
+#         self.y_map = None
 
 
 class image_converter:                                          # CHANGER LE NOM
@@ -41,12 +43,20 @@ class image_converter:                                          # CHANGER LE NO
         self.bridge = CvBridge()
         self.depth_sub = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw",Image,self.callbackDepth)
         self.color_sub = rospy.Subscriber("/camera/color/image_raw",Image,self.callbackColor)
-        self.bottle_pub = rospy.Publisher("/bottle", String, queue_size = 10)
+        self.bottle_pub = rospy.Publisher("/bottle", Vector3, queue_size = 10)
 
         self.color_map = None
         self.depth_map = None
 
-    
+
+        self.camera = image_geometry.PinholeCameraModel()
+        self.camera_info = CameraInfo()
+        self.camera_sub = rospy.Subscriber("/camera/color/camera_info",CameraInfo,self.callbackCamera)
+
+        self.coord_bottles = Vector3()
+
+    def callbackCamera(self, data):
+        self.camera_info = data
 
     def callbackDepth(self,data):
         try:
@@ -65,10 +75,10 @@ class image_converter:                                          # CHANGER LE NO
     def find_bottles(self):
         if self.depth_map is not None and self.color_map is not None:
             #Conversion depth
-            self.depth_map = cv2.convertScaleAbs(self.depth_map, alpha=0.1)
+            depth_copy = cv2.convertScaleAbs(self.depth_map, alpha=0.1)
 
             #Threshold depth
-            discarded, maskProfondeur = cv2.threshold(self.depth_map,Threshold_Param,255,cv2.THRESH_BINARY)
+            discarded, maskProfondeur = cv2.threshold(depth_copy,Threshold_Param,255,cv2.THRESH_BINARY)
             maskProfondeur = cv2.merge([maskProfondeur,maskProfondeur,maskProfondeur])
             maskProfondeur=cv2.inRange(maskProfondeur, 0 , 254)
             
@@ -111,8 +121,22 @@ class image_converter:                                          # CHANGER LE NO
                     #contours[0][0]  --> Coordonnees images
                     #depth_map[contours[0][0][0], contours[0][0][1]]   --> Depth
                     # rs
-                    
-                    self.bottle_pub.publish(str(depth_map[contours[0][0][0], contours[0][0][1]]))
+                    #dist = depth_copy.get_distance(x, y)
+
+                    #self.bottle_pub.publish(str(contours[0][0][0][1]))
+
+
+                    self.camera.fromCameraInfo(self.camera_info)
+                    distance_from_camera = self.depth_map[contours[0][0][0][1], contours[0][0][0][0]]
+                    coord_map = self.camera.projectPixelTo3dRay((contours[0][0][0][1], contours[0][0][0][0]))
+                    coord_map *= distance_from_camera
+                    self.coord_bottles.x = coord_map[0]
+                    self.coord_bottles.y = coord_map[1]
+                    self.coord_bottles.z = 0.05
+                    self.bottle_pub.publish(self.coord_bottles)
+
+
+                    #self.bottle_pub.publish(str(depth_map[contours[0][0][0], contours[0][0][1]]))
                     # AVOIR LES COORDONNEES D'UNE BOUTEILLE
                     # MELANGER LES COUNTOURS / EN CHOISIR UN SEUL
                     # PUBLISH SUR LE TOPIC
@@ -135,6 +159,8 @@ class image_converter:                                          # CHANGER LE NO
 def main(args):
   ic = image_converter()
   rospy.init_node('image_converter', anonymous=True)
+
+
   try:
     rospy.spin()
   except KeyboardInterrupt:
