@@ -17,9 +17,8 @@ tfListener = tf.TransformListener()
 markerArray = MarkerArray()
 
 def callback(data):
-    rospy.loginfo("data avant %s", data)
-    local_goal = tfListener.transformPose("/odom", data)
-    rospy.loginfo("data APRES %s", local_goal)
+
+    convert_coords = tfListener.transformPose("/odom", data) # on converti les coordonnées des bouteilles
 
     marker = Marker()
     marker.header.frame_id = "odom"
@@ -34,9 +33,9 @@ def callback(data):
     marker.color.b = 0.0
     marker.pose.orientation.w = 1.0
 
-    marker.pose.position.x = local_goal.pose.position.x
-    marker.pose.position.y = local_goal.pose.position.y
-    marker.pose.position.z = local_goal.pose.position.z
+    marker.pose.position.x = convert_coords.pose.position.x
+    marker.pose.position.y = convert_coords.pose.position.y
+    marker.pose.position.z = convert_coords.pose.position.z
 
     marker.lifetime.secs, marker.lifetime.nsecs = [0, 0]
     markerArray.markers.append(marker)
