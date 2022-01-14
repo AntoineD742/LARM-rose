@@ -18,12 +18,10 @@ tfListener = tf.TransformListener()
 
 markerArray = MarkerArray()
 
-#ALEX
-SAME_BOTTLE_RADIUS = 0.3 #Quelle distance mettre ?? 1 ou 0.8?
-marker_id = 0
+SAME_BOTTLE_RADIUS = 0.25
+DIST_MIN_BETWEEN_BOTTLES = 0.3
 python_marker_array = []
 def compute_dist_between_two_markers(marker1, marker2):
-    #From StackOverflow
     p1 = np.array([marker1.pose.position.x, marker1.pose.position.y, marker1.pose.position.z])
     p2 = np.array([marker2.pose.position.x, marker2.pose.position.y, marker2.pose.position.z])
     squared_dist = np.sum((p1-p2)**2, axis=0)
@@ -42,7 +40,7 @@ def callback(data):
     marker.scale.x = 0.1
     marker.scale.y = 0.1
     marker.scale.z = 0.1
-    marker.color.a = 1.0 # toujours laisser à 1
+    marker.color.a = 1.0
     marker.color.r = 0.0
     marker.color.g = 1.0
     marker.color.b = 0.0
@@ -55,26 +53,27 @@ def callback(data):
     
 
     if len(python_marker_array) == 0:
-        python_marker_array.append(marker) 
+        python_marker_array.append(marker)
         markerArray.markers.append(marker)
     else:
-        dist = compute_dist_between_two_markers(marker, python_marker_array[-1])
-        #rospy.loginfo("Distance: %s ", dist)
-        
-        rospy.loginfo("bool: %s ", dist > SAME_BOTTLE_RADIUS)
-        if dist > SAME_BOTTLE_RADIUS:
-            python_marker_array.append(marker) 
-            markerArray.markers.append(marker)
-        
+        dist1 = compute_dist_between_two_markers(marker, python_marker_array[-1])
+        if len(python_marker_array) > 1:
+            for i in range(len(python_marker_array)-1):
+                dist2 = compute_dist_between_two_markers(marker, python_marker_array[i])
+                if dist1 > DIST_MIN_BETWEEN_BOTTLES and dist2 > SAME_BOTTLE_RADIUS:
+                    python_marker_array.append(marker) 
+                    markerArray.markers.append(marker)
+        else:
+            if dist1 > DIST_MIN_BETWEEN_BOTTLES:
+                python_marker_array.append(marker) 
+                markerArray.markers.append(marker)
 
             
     
     id = 0
     for m in markerArray.markers:
-        #rospy.loginfo("markerArray: %s ", markerArray)
         m.id = id
         id += 1
-        #rospy.loginfo("Distance: %s ", compute_dist_between_two_markers(marker, m))
 
     publisher.publish(markerArray)
 
