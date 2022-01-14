@@ -8,6 +8,7 @@ Panels:
         - /Status1
         - /TF1
         - /TF1/Frames1
+        - /Marker1
       Splitter Ratio: 0.5
     Tree Height: 555
   - Class: rviz/Selection
@@ -75,14 +76,6 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_footprint:
-          Value: true
-        laser:
-          Value: true
-        map:
-          Value: true
-        odom:
-          Value: true
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -90,9 +83,7 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        map:
-          odom:
-            {}
+        {}
       Update Interval: 0
       Value: true
     - Alpha: 0.699999988079071
@@ -107,7 +98,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: visualization_marker
+      Marker Topic: /bottle
       Name: Marker
       Namespaces:
         {}
@@ -177,5 +168,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1200
-  X: 455
-  Y: 26
+  X: 423
+  Y: -6

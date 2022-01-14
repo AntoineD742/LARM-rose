@@ -9,7 +9,7 @@ from geometry_msgs.msg import Vector3
 
 ## subscribe au topic /bottle
 
-topic = 'visualization_marker'
+topic = '/bottle'
 publisher = rospy.Publisher(topic, Marker, queue_size=10)
 
 rospy.init_node('marker')
@@ -28,19 +28,16 @@ def callback(data):
     marker.color.g = 1.0
     marker.color.b = 0.0
     marker.pose.orientation.w = 1.0
-    # marker.pose.position.x = 0.0
-    # marker.pose.position.y = 0.0
-    # marker.pose.position.z = 0.05
 
     marker.pose.position.x = data.x
     marker.pose.position.y = data.y
     marker.pose.position.z = data.z
 
-    marker.lifetime.secs, marker.lifetime.nsecs = [2, 0]
+    marker.lifetime.secs, marker.lifetime.nsecs = [0, 0]
 
     publisher.publish(marker)
 
-sub = rospy.Subscriber("/bottle", Vector3, callback)
+sub = rospy.Subscriber("/coord_bottle", Vector3, callback)
 
 # spin() enter the program in a infinite loop
 rospy.spin()
