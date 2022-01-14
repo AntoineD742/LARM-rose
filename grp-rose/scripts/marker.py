@@ -17,7 +17,7 @@ rospy.init_node('marker')
 def callback(data):
 
     marker = Marker()
-    marker.header.frame_id = "odom"
+    marker.header.frame_id = "camera_color_optical_frame"
     marker.type = marker.CUBE
     marker.action = marker.ADD
     marker.scale.x = 0.1
@@ -36,7 +36,7 @@ def callback(data):
     marker.pose.position.y = data.y
     marker.pose.position.z = data.z
 
-    marker.lifetime.secs = 200
+    marker.lifetime.secs, marker.lifetime.nsecs = [2, 0]
 
     publisher.publish(marker)
 
