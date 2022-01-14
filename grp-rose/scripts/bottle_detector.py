@@ -10,7 +10,7 @@ from geometry_msgs.msg import Vector3
 from sensor_msgs.msg import Image, CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
 
-#Constantes seuils
+#Constantes seuils de couleur (HSV)
 lowBadge=np.array([0, 35, 100]) 
 hiBadge=np.array([6, 255, 255])
 
@@ -23,22 +23,13 @@ lowOrangeBottle = np.array([0, 200, 200])
 hiOrangeBottle = np.array([25, 255, 255])
 #HSV: 85 110 ; 240 255, 230 , 255
 
-Threshold_Param = 100
+Threshold_Param = 100           #Seuil de profondeur
 
-NBR_PIXEL_MIN_DETECTION_BOUTEILLE_ORANGE = 5000
+#Constantes de taille de la bouteille
+NBR_PIXEL_MIN_DETECTION_BOUTEILLE_ORANGE = 5000       
 NBR_PIXEL_MAX_DETECTION_BOUTEILLE_ORANGE = 20000
 
-# class bottle:
-#     def __init__(self):
-#         self.x_img = None
-#         self.y_img = None
-#         self.x_relative = None
-#         self.y_relative = None
-#         self.x_map = None
-#         self.y_map = None
-
-
-class image_converter:                                          # CHANGER LE NOM
+class bottleFinder:                                          # CHANGER LE NOM
 
     def __init__(self):
         self.bridge = CvBridge()
@@ -102,8 +93,8 @@ class image_converter:                                          # CHANGER LE NO
 
             #Mask bouteille orange
             maskBouteilleOrange=cv2.inRange(img_hsv, lowOrangeBottle, hiOrangeBottle)
-            maskBouteilleOrange=cv2.erode(maskBouteilleOrange, None, iterations=1)
-            maskBouteilleOrange=cv2.dilate(maskBouteilleOrange, None, iterations=1)
+            maskBouteilleOrange=cv2.erode(maskBouteilleOrange, None, iterations=3)
+            maskBouteilleOrange=cv2.dilate(maskBouteilleOrange, None, iterations=3)
             #Combinaison des masks
             # mask = cv2.add(maskRuban, maskBouteilleOrange)
             # mask = cv2.add(maskBadge, maskRuban)
@@ -117,7 +108,6 @@ class image_converter:                                          # CHANGER LE NO
             nbrPixelsDetectes = cv2.countNonZero(grayCounter)
             if nbrPixelsDetectes > NBR_PIXEL_MIN_DETECTION_BOUTEILLE_ORANGE and nbrPixelsDetectes < NBR_PIXEL_MAX_DETECTION_BOUTEILLE_ORANGE: #Critere max de taille?
                 contours, hierarchy = cv2.findContours(grayCounter, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-                #grayCounter = cv2.drawContours(self.color_map, contours, -1, (0,255,0), -1)
                 # rospy.loginfo("Nbr contours: %s", len(contours))
                 if len(contours) <  10 and len(contours) > 0:
                     #On trouve un nombre faible de contours, on fusionne les contours avec un blur 
@@ -125,34 +115,29 @@ class image_converter:                                          # CHANGER LE NO
                     grayCounter=cv2.dilate(grayCounter, None, iterations=9)
                     contours, hierarchy = cv2.findContours(grayCounter, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
                     
+                    #Calcul bbox de la bouteille puis de son centre
                     bbox_bottle = cv2.boundingRect(contours[0])
                     x_cnt_bottle = int(bbox_bottle[0] + bbox_bottle[2] // 2)
                     y_cnt_bottle = int(bbox_bottle[1] + bbox_bottle[3] // 2)
                     center_bottle = (x_cnt_bottle, y_cnt_bottle)
 
-                    #SUPPRIMER LES 4 LIGNES EN DESSOUS
-                    radius = 10
-                    color = (255, 0, 0)
-                    thickness = 2
-                    image = cv2.circle(img_result, center_bottle, radius, color, thickness)
+                    #Display centre bouteille
+                    # radius = 10
+                    # color = (255, 0, 0)
+                    # thickness = 2
+                    # image = cv2.circle(img_result, center_bottle, radius, color, thickness)
 
+                    #Conversion du point de vu de la caméra en coordonnées sur la map
                     self.camera.fromCameraInfo(self.camera_info)
                     distance_from_camera = self.depth_map[y_cnt_bottle, x_cnt_bottle]/1000
                     coord_map = (self.camera.projectPixelTo3dRay(center_bottle))
-                    # MULTPILCATION PAR LA DISTANCE ???????????????????????
                     self.coord_bottles.x = coord_map[0]*distance_from_camera
                     self.coord_bottles.y = coord_map[1]*distance_from_camera
                     self.coord_bottles.z = coord_map[2]*distance_from_camera
                     
+                    #Envoi des coordonnées
                     self.bottle_pub.publish(self.coord_bottles)
 
-
-                    #self.bottle_pub.publish(str(depth_map[contours[0][0][0], contours[0][0][1]]))
-                    # AVOIR LES COORDONNEES D'UNE BOUTEILLE
-                    # MELANGER LES COUNTOURS / EN CHOISIR UN SEUL
-                    # PUBLISH SUR LE TOPIC
-                    # VERIFIER QU'UNE BOUTEILLE NE SE TROUVE PAS DEJA ICI
-                
 
             #Affichage
             # cv2.imshow("Depth", self.depth_map)
@@ -168,8 +153,8 @@ class image_converter:                                          # CHANGER LE NO
             
 
 def main(args):
-  ic = image_converter()
-  rospy.init_node('image_converter', anonymous=True)
+  ic = bottleFinder()
+  rospy.init_node('bottleFinder', anonymous=True)
 
 
   try:
