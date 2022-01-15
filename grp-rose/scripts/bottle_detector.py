@@ -14,8 +14,7 @@ import rospy, tf
 import cv2
 import numpy as np
 import image_geometry
-from std_msgs.msg import String
-from geometry_msgs.msg import Vector3, PoseStamped
+from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import Image, CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -46,27 +45,26 @@ class bottleFinder:
     #                                                                           FILTRAGE ADAPTE
     #                                                                        DETECTION BOUTEILLES
     #                                                                        CALCUL DES COORDONNES
-    #                                                                           ENVOI A /coord_bottle
+    #                                                                        ENVOI A /coord_bottle
     #####################################################################################################################################################################
     def __init__(self):
         self.bridge = CvBridge()            #Conversion Images OpenCV-ROS
-        self.depth_sub = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw",Image,self.callbackDepth)  #Recuperation image de profondeur (Alignée)
-        self.color_sub = rospy.Subscriber("/camera/color/image_raw",Image,self.callbackColor)                   #Recuperation image RGB
-        # self.bottle_pub = rospy.Publisher("/coord_bottle", Vector3, queue_size = 10)                            #Envoi a /coor_bottle
+        self.depth_sub = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw", Image, self.callbackDepth)  #Recuperation image de profondeur (Alignée)
+        self.color_sub = rospy.Subscriber("/camera/color/image_raw", Image, self.callbackColor)                   #Recuperation image RGB
         self.bottle_pub = rospy.Publisher("/coord_bottle", PoseStamped, queue_size = 10)                            #Envoi a /coor_bottle
 
         self.color_map = None   #Framde Depth
         self.depth_map = None   #Frame Color
 
-        #???????????????????????????????????????????????????????????????????????????????????????????????
+        # Initialisation des variables pour calculer les coordonnées de la bouteille dans le référentiel de la camera
         self.camera = image_geometry.PinholeCameraModel()   
         self.camera_info = CameraInfo()
-        self.camera_sub = rospy.Subscriber("/camera/color/camera_info",CameraInfo,self.callbackCamera)
+        self.camera_sub = rospy.Subscriber("/camera/color/camera_info", CameraInfo, self.callbackCamera)
 
-        self.coord_bottles = PoseStamped()  #Donnee à envoyer à /coord_bottle
+        self.coord_bottles = PoseStamped()  #Données à envoyer à /coord_bottle
 
     def callbackCamera(self, data):
-        #???????????????????????????????????????????????????????????????????????????????????????????????
+        # Récupération des données de la caméra
         self.camera_info = data
 
     def callbackDepth(self,data):
@@ -152,13 +150,14 @@ class bottleFinder:
                     # thickness = 2
                     # image = cv2.circle(img_result, center_bottle, radius, color, thickness)
 
-                    #Conversion du point de vu de la caméra en coordonnées sur la map
+                    #Conversion des coordonnées de la bouteille sur l'image en coordonnées par rapport à "camera_color_optical_frame"
                     self.camera.fromCameraInfo(self.camera_info)
                     distance_from_camera = self.depth_map[y_cnt_bottle, x_cnt_bottle]/1000
                     coord_map = (self.camera.projectPixelTo3dRay(center_bottle))
 
                     self.coord_bottles.header.frame_id = "camera_color_optical_frame"
 
+                    # On met à jour la variable self.coord_bottles
                     self.coord_bottles.pose.position.x = coord_map[0]*distance_from_camera
                     self.coord_bottles.pose.position.y = coord_map[1]*distance_from_camera
                     self.coord_bottles.pose.position.z = coord_map[2]*distance_from_camera
@@ -169,7 +168,7 @@ class bottleFinder:
                     self.coord_bottles.pose.orientation.z = quaternion[2]
                     self.coord_bottles.pose.orientation.w = quaternion[3]
                     
-                    #Envoi des coordonnées
+                    #Envoi des coordonnées sur le topic /coord_bottle
                     self.bottle_pub.publish(self.coord_bottles)
 
 
@@ -189,8 +188,6 @@ class bottleFinder:
 def main(args):
   bottle_finder = bottleFinder()
   rospy.init_node('bottleFinder', anonymous=True)
-
-
   try:
     rospy.spin()
   except KeyboardInterrupt:
