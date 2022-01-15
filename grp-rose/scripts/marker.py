@@ -19,7 +19,7 @@ tfListener = tf.TransformListener()
 markerArray = MarkerArray()
 
 #ALEX
-SAME_BOTTLE_RADIUS = 0.8 #Quelle distance mettre ?? 1 ou 0.8?
+SAME_BOTTLE_RADIUS = 0.1 #Quelle distance mettre ?? 1 ou 0.8?
 marker_id = 0
 python_marker_array = []
 def compute_dist_between_two_markers(marker1, marker2):
@@ -32,9 +32,9 @@ def compute_dist_between_two_markers(marker1, marker2):
 
 
 def callback(data):
-    rospy.loginfo("data avant %s", data)
-    local_goal = tfListener.transformPose("/odom", data)
-    rospy.loginfo("data APRES %s", local_goal)
+    #rospy.loginfo("data avant %s", data)
+    abs_coord = tfListener.transformPose("/odom", data)
+    #rospy.loginfo("data APRES %s", abs_coord)
 
     marker = Marker()
     marker.header.frame_id = "odom"
@@ -49,16 +49,15 @@ def callback(data):
     marker.color.b = 0.0
     marker.pose.orientation.w = 1.0
 
-    marker.pose.position.x = data.x
-    marker.pose.position.y = data.y
-    marker.pose.position.z = data.z
+    marker.pose.position.x = abs_coord.pose.position.x
+    marker.pose.position.y = abs_coord.pose.position.y
+    marker.pose.position.z = abs_coord.pose.position.z
+    
     if len(python_marker_array) == 0:
         #Il n'y a pas d'autre marker, on peut append
         python_marker_array.append(marker)
         markerArray.markers.append(marker)
     for i, m in enumerate(python_marker_array):
-        # rospy.loginfo("i:  %s", i)
-        # rospy.loginfo("Marker: %s ", m)
         rospy.loginfo("Distance: %s ", compute_dist_between_two_markers(marker, m))
         if compute_dist_between_two_markers(marker, m) < SAME_BOTTLE_RADIUS:
             #Il y a dejà un ancien marker proche de celui là
@@ -75,19 +74,16 @@ def callback(data):
     
     # marker.lifetime.secs, marker.lifetime.nsecs = [0, 0]
     #markerArray.markers.append(marker)
-    marker.pose.position.x = local_goal.pose.position.x
-    marker.pose.position.y = local_goal.pose.position.y
-    marker.pose.position.z = local_goal.pose.position.z
+    
 
-    marker.lifetime.secs, marker.lifetime.nsecs = [0, 0]
-    markerArray.markers.append(marker)
+    #marker.lifetime.secs, marker.lifetime.nsecs = [0, 0]
+    #markerArray.markers.append(marker)
 
     id = 0
     for m in markerArray.markers:
         m.id = id
         id += 1
         #rospy.loginfo("Distance: %s ", compute_dist_between_two_markers(marker, m))
-
 
     publisher.publish(markerArray)
 
