@@ -3,16 +3,18 @@
 #Import dependecies
 import rospy
 import numpy as np
+import rospy, tf
+
 #Import msg
 from visualization_msgs.msg import Marker, MarkerArray
-from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import PoseStamped
 
-## subscribe au topic /bottle
-
-topic = '/bottle1'
+topic = '/bottle'
 publisher = rospy.Publisher(topic, MarkerArray, queue_size=10)
 
 rospy.init_node('marker')
+
+tfListener = tf.TransformListener()
 
 markerArray = MarkerArray()
 
@@ -30,9 +32,12 @@ def compute_dist_between_two_markers(marker1, marker2):
 
 
 def callback(data):
+    rospy.loginfo("data avant %s", data)
+    local_goal = tfListener.transformPose("/odom", data)
+    rospy.loginfo("data APRES %s", local_goal)
 
     marker = Marker()
-    marker.header.frame_id = "camera_color_optical_frame"
+    marker.header.frame_id = "odom"
     marker.type = marker.CUBE
     marker.action = marker.ADD
     marker.scale.x = 0.1
@@ -70,6 +75,12 @@ def callback(data):
     
     # marker.lifetime.secs, marker.lifetime.nsecs = [0, 0]
     #markerArray.markers.append(marker)
+    marker.pose.position.x = local_goal.pose.position.x
+    marker.pose.position.y = local_goal.pose.position.y
+    marker.pose.position.z = local_goal.pose.position.z
+
+    marker.lifetime.secs, marker.lifetime.nsecs = [0, 0]
+    markerArray.markers.append(marker)
 
     id = 0
     for m in markerArray.markers:
@@ -80,7 +91,7 @@ def callback(data):
 
     publisher.publish(markerArray)
 
-sub = rospy.Subscriber("/coord_bottle", Vector3, callback)
+sub = rospy.Subscriber("/coord_bottle", PoseStamped, callback)
 
 # spin() enter the program in a infinite loop
 rospy.spin()
