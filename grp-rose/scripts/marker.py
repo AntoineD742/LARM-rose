@@ -6,18 +6,16 @@ import numpy as np
 import rospy, tf
 
 #Import msgs
-from visualization_msgs.msg import Marker, MarkerArray
+from visualization_msgs.msg import Marker
 from geometry_msgs.msg import PoseStamped
 
 topic = '/bottle'
 pub_bottle = rospy.Publisher(topic, Marker, queue_size=10)
-pub_array_markers = rospy.Publisher('/array_markers', MarkerArray, queue_size=10)
 
 rospy.init_node('marker')
 
 tfListener = tf.TransformListener()
 
-markerArray = MarkerArray()
 
 SAME_BOTTLE_RADIUS = 0.3          # Distance sous laquelle on considère que c'est la même bouteille qui a été détectée
 DIST_MIN_BETWEEN_BOTTLES = 0.3    # Distance minimal entre deux bouteilles différentes
@@ -62,7 +60,6 @@ def callback(data):
     # Le premier marker est toujours placé
     if len(python_marker_array) == 0:
         python_marker_array.append(marker)
-        markerArray.markers.append(marker)
         pub_bottle.publish(marker)
 
     else:
@@ -74,18 +71,18 @@ def callback(data):
                 dist2 = compute_dist_between_two_markers(marker, python_marker_array[i])
                 # Si le nouveau marker est loin des autres bouteilles posées et qu'il n'y a pas d'autres bouteilles dans un rayon proche, on pose un nouveau marker
                 if dist1 > DIST_MIN_BETWEEN_BOTTLES and dist2 > SAME_BOTTLE_RADIUS:
-                    python_marker_array.append(marker) 
-                    markerArray.markers.append(marker)
-                    pub_bottle.publish(marker)
+                    # On vérifie qu'on ne publie pas deux fois le même marker
+                    if marker.id != python_marker_array[-1].id:
+                        python_marker_array.append(marker)
+                        pub_bottle.publish(marker)
+                    else:
+                        break
         
         # Si un seul marker a été placé on en place un nouveau ssi il est assez loin du premier placé
         else:
             if dist1 > DIST_MIN_BETWEEN_BOTTLES:
                 python_marker_array.append(marker)
-                markerArray.markers.append(marker)
                 pub_bottle.publish(marker)
-
-    pub_array_markers.publish(markerArray)
 
 sub = rospy.Subscriber("/coord_bottle", PoseStamped, callback)
 

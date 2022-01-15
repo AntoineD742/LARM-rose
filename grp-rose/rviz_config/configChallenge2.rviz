@@ -105,10 +105,10 @@ Visualization Manager:
       Unreliable: false
       Use Timestamp: false
       Value: true
-    - Class: rviz/MarkerArray
+    - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /array_markers
-      Name: MarkerArray
+      Marker Topic: /bottle
+      Name: Marker
       Namespaces:
         {}
       Queue Size: 100
@@ -177,5 +177,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1200
-  X: 379
-  Y: 61
+  X: 347
+  Y: 29
