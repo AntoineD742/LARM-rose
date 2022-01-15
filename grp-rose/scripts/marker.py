@@ -4,15 +4,17 @@
 import rospy
 
 #Import msg
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, MarkerArray
 from geometry_msgs.msg import Vector3
 
 ## subscribe au topic /bottle
 
-topic = '/bottle'
-publisher = rospy.Publisher(topic, Marker, queue_size=10)
+topic = '/bottle1'
+publisher = rospy.Publisher(topic, MarkerArray, queue_size=10)
 
 rospy.init_node('marker')
+
+markerArray = MarkerArray()
 
 def callback(data):
 
@@ -33,9 +35,15 @@ def callback(data):
     marker.pose.position.y = data.y
     marker.pose.position.z = data.z
 
-    marker.lifetime.secs, marker.lifetime.nsecs = [0, 0]
+    # marker.lifetime.secs, marker.lifetime.nsecs = [0, 0]
+    markerArray.markers.append(marker)
 
-    publisher.publish(marker)
+    id = 0
+    for m in markerArray.markers:
+       m.id = id
+       id += 1
+
+    publisher.publish(markerArray)
 
 sub = rospy.Subscriber("/coord_bottle", Vector3, callback)
 
