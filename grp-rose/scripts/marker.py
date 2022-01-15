@@ -32,9 +32,8 @@ def compute_dist_between_two_markers(marker1, marker2):
 
 
 def callback(data):
-    #rospy.loginfo("data avant %s", data)
-    abs_coord = tfListener.transformPose("/odom", data)
-    #rospy.loginfo("data APRES %s", abs_coord)
+
+    convert_coords = tfListener.transformPose("/odom", data) # on converti les coordonnées des bouteilles
 
     marker = Marker()
     marker.header.frame_id = "odom"
@@ -49,9 +48,9 @@ def callback(data):
     marker.color.b = 0.0
     marker.pose.orientation.w = 1.0
 
-    marker.pose.position.x = abs_coord.pose.position.x
-    marker.pose.position.y = abs_coord.pose.position.y
-    marker.pose.position.z = abs_coord.pose.position.z
+    marker.pose.position.x = convert_coords.pose.position.x
+    marker.pose.position.y = convert_coords.pose.position.y
+    marker.pose.position.z = convert_coords.pose.position.z
     
     if len(python_marker_array) == 0:
         #Il n'y a pas d'autre marker, on peut append
@@ -75,7 +74,7 @@ def callback(data):
     # marker.lifetime.secs, marker.lifetime.nsecs = [0, 0]
     #markerArray.markers.append(marker)
     
-
+    
     #marker.lifetime.secs, marker.lifetime.nsecs = [0, 0]
     #markerArray.markers.append(marker)
 
