@@ -9,5 +9,6 @@
   <node pkg="amcl" type="amcl" name="amcl" />
 
   <!-- Navigation using MoveBase -->  
+  <node pkg="move_base" type="move_base" name="move_base" />
 
 </launch>
