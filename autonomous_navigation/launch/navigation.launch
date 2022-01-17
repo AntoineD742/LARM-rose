@@ -9,7 +9,7 @@
   <node pkg="amcl" type="amcl" name="amcl" />
 
   <!-- Navigation using MoveBase -->  
-  <!-- <node pkg="move_base" type="move_base" name="move_base" /> -->
-  <node pkg="autonomous-navigation" type="move_base.py" name="move-to" />
+  <node pkg="move_base" type="move_base" name="move_base" />
+  <!-- <node pkg="autonomous-navigation" type="send_goal.py" name="move-to" /> -->
 
 </launch>
