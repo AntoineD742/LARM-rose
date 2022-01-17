@@ -1,6 +1,6 @@
 <launch>
   <include file="$(find larm)/launch/challenge-1.launch"/>
-  <node pkg="grp-rose" type="move.py" name="move_robot"  output="screen">
+  <node pkg="grp-rose" type="move-challenge1.py" name="move_robot"  output="screen">
     <remap from="cmd_vel" to="cmd_vel"/>
   </node>
 </launch>
