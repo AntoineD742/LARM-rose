@@ -1,7 +1,0 @@
-<launch>
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find grp-rose)/rviz_config/configChallenge2.rviz"/>
-  <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" args="scan:=scan" />
-  <node pkg="tf" type="static_transform_publisher" name="scan_broadcaster" args="0.1 0 0 0 0 0 1 base_footprint laser 100" />
-  <node pkg="grp-rose" type="bottle_detector.py" name="bottle_detector" />
-  <node pkg="grp-rose" type="marker.py" name="marker" />
-</launch>
