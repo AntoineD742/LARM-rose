@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# license removed for brevity
+#!/usr/bin/python3
 
 import rospy
 

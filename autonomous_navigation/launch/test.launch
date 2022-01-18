@@ -1,0 +1,9 @@
+<launch>
+    <param name="/use_sim_time" value="true" />
+    <node pkg="tf" type="static_transform_publisher" name="base_footprint_in_odom"
+        args="2.3 4.0 0.01 0.8 0.0 0.0 /odom /base_footprint 80" />
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find autonomous_navigation)/maps/map.yaml" />
+    <node pkg="amcl" type="amcl" name="amcl" />
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find autonomous_navigation)/configrviz/move-to.rviz" />
+    <!-- <node pkg="autonomous_navigation" type="send_goal.py" name="gogogo" output="screen" /> -->
+</launch>
