@@ -162,6 +162,7 @@ include_directories(
 catkin_install_python(PROGRAMS
   scripts/move-auto-challenge1.py
   scripts/move-challenge1.py
+  scripts/test_move_to.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
