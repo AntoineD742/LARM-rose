@@ -1,0 +1,32 @@
+<launch>
+
+  <!-- Initialisation robot -->
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
+
+  <!-- Initialisation Rviz -->
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find grp-rose)/rviz_config/configChallenge3.rviz"/>
+    
+  <!-- Initialisation Realsense -->
+  <include file="$(find realsense2_camera)/launch/rs_aligned_depth.launch">
+    <arg name="align_depth" value="true" />
+  </include>
+
+  <!-- Initialisation laser -->
+  <node pkg="urg_node" type="urg_node" name="start_laser" />
+
+  <!-- Initialisation génération map -->
+  <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" args="scan:=scan" />
+  <node pkg="tf" type="static_transform_publisher" name="scan_broadcaster" args="0.1 0 0 0 0 0 1 base_footprint laser 100" />
+
+  <!-- Mouvement du robot -->
+  <node pkg="grp-rose" type="move-auto-challenge1.py" name="vel_robot"  output="screen">
+    <remap from="/cmd_vel_mux/input/navi" to='/cmd_vel_mux/input/navi'/>
+  </node>
+
+  <!-- Détection des bouteilles -->
+  <node pkg="grp-rose" type="dnn_bottle.py" name="bottle_detector" />
+
+  <!-- Emission des marqueurs -->
+  <node pkg="grp-rose" type="marker.py" name="marker" />
+
+</launch>
