@@ -11,7 +11,7 @@ from sensor_msgs.msg import LaserScan, Image
 from cv_bridge import CvBridge, CvBridgeError
 #CONSTANTES / PARAMETRES
 VITESSE_LINEAIRE_ROBOT_MIN = 0.1
-VITESSE_LINEAIRE_ROBOT_MAX = 1
+VITESSE_LINEAIRE_ROBOT_MAX = 0.3
 VITESSE_ANGULAIRE_ROBOT_MIN = 0.5
 VITESSE_ANGULAIRE_ROBOT_MAX = 1
 
@@ -63,7 +63,8 @@ class mazeRunner:
         #4 OBJET PROCHE SUR LA GAUCHE
         #5 OBJET PROCHE SUR LA DROITE
         if order == 0:
-            self.current_forward_speed = - VITESSE_LINEAIRE_ROBOT_MIN
+            #self.current_forward_speed = - VITESSE_LINEAIRE_ROBOT_MIN
+            self.current_forward_speed = 0
         elif order == 1:  
             if(self.current_forward_speed < VITESSE_LINEAIRE_ROBOT_MAX):
                 self.current_forward_speed += 0.05
