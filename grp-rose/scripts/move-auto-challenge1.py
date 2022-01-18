@@ -2,23 +2,28 @@
 
 #Import dependecies
 import math, rospy, random
+import cv2
 
 #Import msg
 from geometry_msgs.msg import Twist
-from sensor_msgs.msg import LaserScan
+from sensor_msgs.msg import LaserScan, Image
 
+from cv_bridge import CvBridge, CvBridgeError
 #CONSTANTES / PARAMETRES
 VITESSE_LINEAIRE_ROBOT_MIN = 0.1
-VITESSE_LINEAIRE_ROBOT_MAX = 0.5
+VITESSE_LINEAIRE_ROBOT_MAX = 1
 VITESSE_ANGULAIRE_ROBOT_MIN = 0.5
 VITESSE_ANGULAIRE_ROBOT_MAX = 1
 
 
 MIN_DISTANCE_X = 0.25 #Distance pour laquelle le robot considère l'obstacle comme à éviter (Sur l'axe X)
 MIN_DISTANCE_Y = 0.2 #Distance pour laquelle le robot considère l'obstacle comme à éviter (Sur l'axe Y)
-AVOID_DISTANCE_X = 1 #Distance pour laquelle le robot considère l'obstacle comme lointain (Sur l'axe X)
+AVOID_DISTANCE_X = 1.5 #Distance pour laquelle le robot considère l'obstacle comme lointain (Sur l'axe X)
 AVOID_DISTANCE_Y = 0.8 #Distance pour laquelle le robot considère l'obstacle comme lointain (Sur l'axe Y)
+# AVOID_DISTANCE_X = 1 #Distance pour laquelle le robot considère l'obstacle comme lointain (Sur l'axe X)
+# AVOID_DISTANCE_Y = 0.8 #Distance pour laquelle le robot considère l'obstacle comme lointain (Sur l'axe Y)
 
+OBSTACLE_PIXEL_SIZE = 2000 #Nombre de pixel à partir duquel on considère qu'un obstacle est proche de la caméra
 
 #OLD
 BEHIND_THE_ROBOT = 50 #On set la distance des objets derrière le laser à un nombre infiniment grand
@@ -34,7 +39,13 @@ class mazeRunner:
         self.move_command = Twist()
         self.current_forward_speed = VITESSE_LINEAIRE_ROBOT_MIN
         self.current_angular_speed = 0
+
+        self.bridge = CvBridge()            #Conversion Images OpenCV-ROS
+        self.depth_sub = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw", Image, self.callbackDepth)  #Recuperation image de profondeur (Alignée)
+        self.depth_map = None   #Frame Color    
+        self.depth_obstacle_ahead = False
         
+        self.generate_new_direction = False
 
     def callbackLaser(self, data):    #Mouvement du robot selon la data reçu par le laser
         order = self.decisionMouvement(data)
@@ -42,8 +53,6 @@ class mazeRunner:
         self.setAngulaireSpeed(order)
         self.move_command.linear.x = self.current_forward_speed
         self.move_command.angular.z = self.current_angular_speed
-        print("Forward speed: " + str(self.current_forward_speed))
-        print("Angular speed: " + str(self.current_angular_speed))
         self.movement_pub.publish(self.move_command)
     
     def setFwdSpeed(self, order): 
@@ -53,7 +62,9 @@ class mazeRunner:
         #3 OBJET LOINTAIN SUR LA DROITE
         #4 OBJET PROCHE SUR LA GAUCHE
         #5 OBJET PROCHE SUR LA DROITE
-        if order == 1:  
+        if order == 0:
+            self.current_forward_speed = - VITESSE_LINEAIRE_ROBOT_MIN
+        elif order == 1:  
             if(self.current_forward_speed < VITESSE_LINEAIRE_ROBOT_MAX):
                 self.current_forward_speed += 0.05
             else:
@@ -74,8 +85,18 @@ class mazeRunner:
         #3 OBJET LOINTAIN SUR LA DROITE
         #4 OBJET PROCHE SUR LA GAUCHE
         #5 OBJET PROCHE SUR LA DROITE
-        if order == 1:
+        if order == 0:
+            if self.generate_new_direction:
+                if random.random() < 0.5:
+                    self.current_angular_speed = +VITESSE_ANGULAIRE_ROBOT_MAX
+                else:
+                    self.current_angular_speed = -VITESSE_ANGULAIRE_ROBOT_MAX
+                self.generate_new_direction = False
+
+            
+        elif order == 1:
             self.current_angular_speed = 0
+            self.generate_new_direction = True #Prochaine fois que le robot devra faire demi-tour il generera aleatoirement une direction
         elif order == 2:
             self.current_angular_speed = -VITESSE_ANGULAIRE_ROBOT_MIN
         elif order == 3:
@@ -99,6 +120,9 @@ class mazeRunner:
         #4 OBJET PROCHE SUR LA GAUCHE
         #5 OBJET PROCHE SUR LA DROITE
         
+        if(self.depth_obstacle_ahead):
+            return 0
+
         #Calcul des distances
         obstacles= []
         distances = []
@@ -130,7 +154,28 @@ class mazeRunner:
             elif -AVOID_DISTANCE_Y < obstacles[index_min][1] < 0:
                 return 3                            # obstacle lointain à droite, tournez à gauche
         return 1                            # pas d'obstacle, continuer à avancer
-        
+
+    def callbackDepth(self,data):
+        try:
+            #Recuperation image de profondeur (Alignée), Conveersion au format OpenCV
+            self.depth_map = self.bridge.imgmsg_to_cv2(data, "passthrough")
+            self.depth_map = cv2.convertScaleAbs(self.depth_map, alpha=0.1)
+            self.depth_map = cv2.inRange(self.depth_map, 1 , 40)
+            self.depth_map = cv2.bitwise_not(self.depth_map)
+            cv2.imshow("Depth", self.depth_map)
+            cv2.waitKey(3)
+            heightDepthMap = self.depth_map.shape[0]
+            widthDepthMap = self.depth_map.shape[1]
+            nbrPixelsDetectes = (heightDepthMap*widthDepthMap) - cv2.countNonZero(self.depth_map)
+            if nbrPixelsDetectes > OBSTACLE_PIXEL_SIZE:
+                self.depth_obstacle_ahead = True
+            else:
+                self.depth_obstacle_ahead = False
+            #print(nbrPixelsDetectes)
+
+        except CvBridgeError as e:
+            print(e)
+    
 
 def main():
     mR = mazeRunner()
@@ -140,7 +185,7 @@ def main():
         rospy.spin()
     except KeyboardInterrupt:
         print("Shutting down")
-
+    cv2.destroyAllWindows() 
 if __name__ == '__main__':
     main()
 
