@@ -101,8 +101,6 @@ class MoveRobotTo:
 
             self.cmd.linear.x = speed
 
-            self.cmd.linear.x = dist
-
         self.commandPublisher.publish(self.cmd)
 
         return True
