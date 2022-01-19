@@ -30,7 +30,10 @@ hiBadge=np.array([6, 255, 255])             #Badge bouteille noire (Max)
 lowRuban = np.array([0, 0, 230])            #Ruban bouteille noire (Min)
 hiRuban = np.array([255, 100, 255])         #Ruban bouteille noire (Max)
 
-lowOrangeBottle = np.array([0, 200, 200])   #Bouteille orange (Min)
+# lowOrangeBottle = np.array([0, 200, 200])   #Bouteille orange (Min)
+# hiOrangeBottle = np.array([25, 255, 255])   #Bouteille orange (Min)
+
+lowOrangeBottle = np.array([0, 230, 230])   #Bouteille orange (Min)
 hiOrangeBottle = np.array([25, 255, 255])   #Bouteille orange (Min)
 
 #Seuil de profondeur (0-255)
