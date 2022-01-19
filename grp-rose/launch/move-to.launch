@@ -1,6 +1,0 @@
-<launch>
-    <node pkg="tf" type="static_transform_publisher" name="base_footprint_in_odom"
-        args="2.3 4.0 0.01 0.8 0.0 0.0 /odom /base_footprint 80" />
-    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find grp-rose)/configrviz/move-to.rviz" />
-    <node pkg="grp-rose" type="test_move_to.py" name="gogogo" output="screen" />
-</launch>

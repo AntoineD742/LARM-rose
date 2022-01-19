@@ -4,7 +4,7 @@
   <include file="$(find larm)/launch/challenge-1.launch"/>
 
   <!-- Initilisation Rviz -->
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find grp-rose)/rviz_config/move-to.rviz"/>
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find grp-rose)/rviz_config/configChallenge3.rviz"/>
   
   <!-- Initialisation génération map -->
   <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" args="scan:=scan" />
