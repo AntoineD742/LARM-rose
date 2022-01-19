@@ -164,7 +164,8 @@ catkin_install_python(PROGRAMS
   scripts/move-challenge1.py
   scripts/marker.py
   scripts/bottle_detector.py
-  scripts/move_to.py
+  scripts/move_to_robot.py
+  scripts/move_to_simulation.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
