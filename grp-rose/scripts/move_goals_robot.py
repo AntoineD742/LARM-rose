@@ -51,7 +51,7 @@ AVOID_DISTANCE_Y = 0.8      #Distance pour laquelle le robot considère l'obstac
 OBSTACLE_PIXEL_SIZE = 2000  #Nombre de pixel à partir duquel on considère qu'un obstacle est proche de la caméra
 
 BEHIND_THE_ROBOT = 50       #On set la distance des objets derrière le laser à un nombre infiniment grand
-
+PI = math.pi
 
 class RobotMouvement:
 
@@ -70,6 +70,10 @@ class RobotMouvement:
         self.dist = None
         self.current_forward_speed = 0
         self.current_angular_speed = 0
+
+        self.last_order = None
+        self.blocked = False
+        self.compteur = 0
 
         # Publisher
         self.commandPublisher = rospy.Publisher("/cmd_vel_mux/input/navi", Twist, queue_size = 10)   
@@ -98,6 +102,7 @@ class RobotMouvement:
         order = self.decisionMouvement(data)
         self.setFwdSpeed(order)
         self.setAngulaireSpeed(order)
+        self.last_order = order
         self.cmd.linear.x = self.current_forward_speed
         self.cmd.angular.z = self.current_angular_speed
         self.commandPublisher.publish(self.cmd)
@@ -165,6 +170,17 @@ class RobotMouvement:
             self.current_angular_speed = -VITESSE_ANGULAIRE_ROBOT_MIN
         elif order == 3:
             self.current_angular_speed = +VITESSE_ANGULAIRE_ROBOT_MIN
+        elif order == 6:
+            self.current_angular_speed = VITESSE_ANGULAIRE_ROBOT_MIN*(PI-self.theta)
+            if abs(PI - self.theta) < 0.1:
+            # Une fois que le robot a fait son demi-tour, le robot n'est plus bloqué
+                self.blocked = False
+                self.compteur = 0
+        elif self.last_order == 4 and order == 5 or self.last_order == 5 and order == 4:
+            self.compteur += 1
+            if self.compteur == 20:
+                # Si compteur = 10 on considère que le robot est bloqué
+                self.blocked = True
         elif order == 4:
             self.current_angular_speed = -VITESSE_ANGULAIRE_ROBOT_MAX
         elif order == 5:
@@ -182,9 +198,13 @@ class RobotMouvement:
         #3 OBJET LOINTAIN SUR LA DROITE
         #4 OBJET PROCHE SUR LA GAUCHE
         #5 OBJET PROCHE SUR LA DROITE
+        #6 ROBOT BLOQUE
         
         if(self.depth_obstacle_ahead):
             return 0
+
+        if(self.blocked):
+            return 6
 
         #Calcul des distances
         obstacles= []
