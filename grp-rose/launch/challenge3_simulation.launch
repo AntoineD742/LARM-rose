@@ -11,11 +11,6 @@
   <node pkg="tf" type="static_transform_publisher" name="scan_broadcaster" args="0.1 0 0 0 0 0 1 base_footprint laser 100" />
 
   <!-- Mouvement du robot -->
-  <!-- <node pkg="grp-rose" type="move-auto-challenge1.py" name="vel_robot"  output="screen">
-    <remap from="cmd_vel" to="cmd_vel"/>
-  </node> -->
-
-  <!-- Test move to -->
-  <node pkg="grp-rose" type="move_auto_challenge3.py" name="move_robot_to" output="screen" />
+  <node pkg="grp-rose" type="move_goals_sim.py" name="move_robot" output="screen" />
   
 </launch>
