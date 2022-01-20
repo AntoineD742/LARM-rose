@@ -1,4 +1,4 @@
-# Challenge 3 - Groupe ROSE
+# Challenge 3 - Groupe Rose
 
 Bienvenue sur notre branche concernant le challenge 3 de l'UV LARM !
 
@@ -23,7 +23,7 @@ Il faut aussi installer les **`drivers`** et les **`packages`** ros liés à la 
 Pour installer les drivers veuillez suivre les consignes disponibles avec ce lien :
 https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md
 
-Ensuite veuillez installer les librairies et outils suivants :
+Ensuite, veuillez installer les librairies et outils suivants :
 ``` bash
 sudo apt install \
     librealsense2-dkms \
@@ -52,7 +52,7 @@ source devel/setup.bash
 roslaunch grp-rose challenge3_simulation.launch
 ```
 
-Avec ce processus, le robot sera lancé en mode autonome, c'est-à-dire qu'il explorera la map tous seul grâce à un mouvement ricochet. Cependant, si vous voyez qu'il se retrouve bloqué ou qu'il n'a pas exploré une partie de la map, vous pouvez lui envoyer un goal via Rviz. Dès qu'un goal sera envoyé le robot ne sera plus autonome, il atteindra le goal en évitant les obstacles et il s'aarrêtera, il ne redémarrera que si un nouveau goal lui est envoyé.
+Avec ce processus, le robot sera lancé en mode autonome, c'est-à-dire qu'il explorera la map tous seul grâce à un mouvement ricochet. Cependant, si vous voyez qu'il se retrouve bloqué ou qu'il n'a pas exploré une partie de la map, vous pouvez lui envoyer un goal via Rviz. Dès qu'un goal sera envoyé, le robot ne sera plus autonome, il atteindra ce dernier en évitant les obstacles et il s'arrêtera, il ne redémarrera que si un nouveau goal lui est envoyé.
 
 ## Lancement de l'exploration hors simulation
 
@@ -63,7 +63,7 @@ source devel/setup.bash
 roslaunch grp-rose challenge3_tbot.launch
 ```
 
-Hors simulation le robot se comporte comme décrit dans le paragraphe précédent. Cependant, hors simulation le robot détecte aussi les bouteilles oranges placées dans l'arène grâce à la caméra RealSense et une méthode de détection par seuillage colorimétrique avec conversion en HSV.
+Hors simulation le robot se comporte comme décrit dans le paragraphe précédent. Cependant, hors simulation le robot détectera aussi les bouteilles oranges placées dans l'arène grâce à la caméra RealSense et une méthode de détection par seuillage colorimétrique avec conversion HSV.
 
 Il est possible d'écouter le topic `/bottle` pour voir la position de ces dernières :
 ``` bash
