@@ -23,7 +23,7 @@ Il faut aussi installer les **`drivers`** et les **`packages`** ros liés à la 
 Pour installer les drivers veuillez suivre les consignes disponibles avec ce lien :
 https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md
 
-Ensuite veuillez installer les librairies et outils suivants :
+Ensuite, veuillez installer les librairies et outils suivants :
 ``` bash
 sudo apt install \
     librealsense2-dkms \
