@@ -41,7 +41,7 @@ sudo apt-get install \
 
 ## But de ce challenge
 
-Le but du challenge 2 est que le robot génére une map sur Rviz via le topic `/map` en récupérant les données d'un robag. En plus de générer cette map le robot doit aussi détecter des bouteilles oranges et les placer sur la map grâce à des marqueurs verts. On peut voir la position de ces marqueurs en écoutant le topic `/bottle`.
+Le but du challenge 2 est que le robot génére une map sur Rviz via le topic `/map` en récupérant les données d'un rosbag. En plus de générer cette map le robot doit aussi détecter des bouteilles oranges et les placer sur la map grâce à des marqueurs verts. On peut voir la position de ces marqueurs en écoutant le topic `/bottle`.
 Pour détecter les bouteilles nous avons utilisé une caméra RealSense Intel et une méthode de détection par seuillage colorimétrique avec conversion HSV.
 
 ## Lancement de l'exploration
