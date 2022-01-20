@@ -1,4 +1,4 @@
-# Challenge 2
+# Challenge 3 - Groupe ROSE
 
 Bienvenue sur notre branche concernant le challenge 3 de l'UV LARM !
 
@@ -14,7 +14,7 @@ Passez sur la branche challenge3 :
 git checkout challenge3
 ```
 
-## Dépendance
+## Dépendances
 
 **Attention** pour que tout fonctionne normalement il est nécessaire d'installer sur votre machine le package **`mb6-bot`**. Pour l'installer veuillez suivre les consignes disponibles avec ce lien :
 https://bitbucket.org/imt-mobisyst/mb6-tbot/src/master/
@@ -41,7 +41,7 @@ sudo apt-get install \
 
 ## But de ce challenge
 
-Le challenge 3 correspond en fait à la fusion du challenge 1 et 2. Le robot est censé se déplacer par lui-même en évitant les obstacles dans un environnement inconnu. En plus, il doit pouvoir générer une map dans le topic /map et détecter les bouteilles oranges présentes sur la map, il les affiche via des marqueurs verts sur Rviz via le topic /bottle. Nous avons rajouté la possibilité d'envoyer des goals au robot via Rviz et le topic /move_base_simple/goal. Cette fonctionnalité nous permet d'envoyer le robot à des endroits qu'il n'a pa pu explorer des endroits ou pour le débloquer en cas de soucis.
+Le challenge 3 correspond en fait à la fusion du challenge 1 et 2. Le robot est censé se déplacer par lui-même en évitant les obstacles dans un environnement inconnu. En plus, il doit pouvoir générer une map dans le topic `/map` et détecter les bouteilles oranges présentes sur la map, il les affiche via des marqueurs verts sur Rviz via le topic `/bottle`. Nous avons rajouté la possibilité d'envoyer des goals au robot via Rviz et le topic `/move_base_simple/goal`. Cette fonctionnalité nous permet d'envoyer le robot à des endroits qu'il n'a pa pu explorer ou pour le débloquer en cas de soucis.
 
 ## Lancement de l'exploration en simulation
 
@@ -65,12 +65,12 @@ roslaunch grp-rose challenge3_tbot.launch
 
 Hors simulation le robot se comporte comme décrit dans le paragraphe précédent. Cependant, hors simulation le robot détecte aussi les bouteilles oranges placées dans l'arène grâce à la caméra RealSense et une méthode de détection par seuillage colorimétrique avec conversion en HSV.
 
-Il est possible d'écouter le topic /bottle pour voir la position de ces dernières :
+Il est possible d'écouter le topic `/bottle` pour voir la position de ces dernières :
 ``` bash
 rostopic echo /bottle
 ```
 
-Dans les deux cas, vous pouvez aussi écouter le topic /move_base_simple/goal pour voir les goals que vous envoyez au robot :
+Dans les deux cas, vous pouvez aussi écouter le topic `/move_base_simple/goal` pour voir les goals que vous envoyez au robot :
 ``` bash
 rostopic echo /move_base_simple/goal
 ```
