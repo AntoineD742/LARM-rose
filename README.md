@@ -1,4 +1,4 @@
-# Challenge 3 - Groupe ROSE
+# Challenge 3 - Groupe Rose
 
 Bienvenue sur notre branche concernant le challenge 3 de l'UV LARM !
 
@@ -63,7 +63,7 @@ source devel/setup.bash
 roslaunch grp-rose challenge3_tbot.launch
 ```
 
-Hors simulation le robot se comporte comme décrit dans le paragraphe précédent. Cependant, hors simulation le robot détecte aussi les bouteilles oranges placées dans l'arène grâce à la caméra RealSense et une méthode de détection par seuillage colorimétrique avec conversion en HSV.
+Hors simulation le robot se comporte comme décrit dans le paragraphe précédent. Cependant, hors simulation le robot détecte aussi les bouteilles oranges placées dans l'arène grâce à la caméra RealSense et une méthode de détection par seuillage colorimétrique avec conversion HSV.
 
 Il est possible d'écouter le topic `/bottle` pour voir la position de ces dernières :
 ``` bash
