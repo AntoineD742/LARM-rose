@@ -16,6 +16,6 @@
   </node> -->
 
   <!-- Test move to -->
-  <node pkg="grp-rose" type="move-auto-challenge1.py" name="move_robot_to" output="screen" />
+  <node pkg="grp-rose" type="move_auto_challenge3.py" name="move_robot_to" output="screen" />
   
 </launch>

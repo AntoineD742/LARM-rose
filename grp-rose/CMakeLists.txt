@@ -160,14 +160,13 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/move-auto-challenge1.py
   scripts/move-challenge1.py
   scripts/marker.py
   scripts/bottle_detector.py
   scripts/move_to_robot.py
-  scripts/move_to_simulation.py
-  scripts/move_auto_sim_challenge3.py
-  scripts/move_auto_robot.py
+  scripts/move_goals_sim.py
+  scripts/move_goals_robot.py
+  scripts/move_auto_challenge3.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
