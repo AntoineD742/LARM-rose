@@ -41,7 +41,7 @@ sudo apt-get install \
 
 ## But de ce challenge
 
-Le challenge 3 correspond en fait à la fusion du challenge 1 et 2. Le robot est censé se déplacer par lui-même en évitant les obstacles dans un environnement inconnu. En plus, il doit pouvoir générer une map dans le topic `/map` et détecter les bouteilles oranges présentes sur la map, il les affiche via des marqueurs verts sur Rviz via le topic `/bottle`. Nous avons rajouté la possibilité d'envoyer des goals au robot via Rviz et le topic `/move_base_simple/goal`. Cette fonctionnalité nous permet d'envoyer le robot à des endroits qu'il n'a pa pu explorer ou pour le débloquer en cas de soucis.
+Le challenge 3 correspond en fait à la fusion du challenge 1 et 2. Le robot est censé se déplacer par lui-même en évitant les obstacles dans un environnement inconnu. En plus, il doit pouvoir générer une map dans le topic `/map` et détecter les bouteilles oranges présentes sur la map, il les affiche via des marqueurs verts sur Rviz via le topic `/bottle`. Nous avons rajouté la possibilité d'envoyer des goals au robot via Rviz et le topic `/move_base_simple/goal`. Cette fonctionnalité nous permet d'envoyer le robot à des endroits qu'il n'a pas pu explorer (par exemple).
 
 ## Lancement de l'exploration en simulation
 
