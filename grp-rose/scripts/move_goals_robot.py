@@ -24,16 +24,16 @@ VITESSE_ANGULAIRE_ROBOT_MAX = 1
 COEFF_VITESSE_TURN = 0.5
 
 DISTANCE_1 = 3.0
-VITESSE_1 = 0.7
+VITESSE_1 = 0.3
 
 DISTANCE_2 = 2.0
-VITESSE_2 = 0.5
+VITESSE_2 = 0.25
 
 DISTANCE_3 = 1.0
-VITESSE_3 = 0.4
+VITESSE_3 = 0.20
 
 DISTANCE_4 = 0.5
-VITESSE_4 = 0.2
+VITESSE_4 = 0.15
 
 DISTANCE_5 = 0.4
 VITESSE_5 = 0.1
@@ -124,9 +124,9 @@ class RobotMouvement:
 
 
     
-    def setFwdSpeed(self, order): 
+    def setFwdSpeed(self, order):
+        # Fonction mettant à jour la commande de vitesse linéaire du robot en fonction de l'ordre reçu
         if order == 0:
-            #self.current_forward_speed = - VITESSE_LINEAIRE_ROBOT_MIN
             self.current_forward_speed = 0
         elif order == 1:
             # On vérifie qu'on est en mode autonome quand l'ordre est 1
@@ -147,6 +147,7 @@ class RobotMouvement:
         #print("Forward speed: " + str(self.current_forward_speed))
     
     def setAngulaireSpeed(self, order):
+        # Fonction mettant à jour la commande de vitesse angulaire du robot en fonction de l'ordre reçu
         if order == 0:
             if self.generate_new_direction:
                 if random.random() < 0.5:
@@ -170,9 +171,6 @@ class RobotMouvement:
         elif order == 5:
             self.current_angular_speed = +VITESSE_ANGULAIRE_ROBOT_MAX
         
-
-
-    
 
     def decisionMouvement(self,data):
         # Calcul des distances entre le robot et l'obstacle le plus proche, prise d'une décision permettant d'éviter l'obstacles
@@ -221,7 +219,7 @@ class RobotMouvement:
 
 
     def move_command_linear(self, event=None):
-
+        # Fonction gérant le mouvement linéaire du robot en mode non autonome (avec un goal)
         inc_x = self.goal.pose.position.x - self.x       # distance robot-goal en x
         inc_y = self.goal.pose.position.y - self.y       # distance robot-goal en y
         self.dist = sqrt(pow(inc_x, 2) + pow(inc_y, 2))  # calcul distance
@@ -246,7 +244,7 @@ class RobotMouvement:
 
 
     def move_command_angular(self, event=None):
-
+        # Fonction gérant le mouvement angulaire du robot en mode non autonome (avec un goal)
         inc_x = self.goal.pose.position.x - self.x      # distance robot-goal en x
         inc_y = self.goal.pose.position.y - self.y      # distance robot-goal en y
         angle_to_goal = atan2(inc_y, inc_x)             # calcul de l'angle pour atteindre le goal

@@ -129,8 +129,8 @@ class RobotMouvement:
 
 
     def setFwdSpeed(self, order):
+        # Fonction mettant à jour la commande de vitesse linéaire du robot en fonction de l'ordre reçu
         if order == 0:
-            #self.current_forward_speed = - VITESSE_LINEAIRE_ROBOT_MIN
             self.current_forward_speed = 0
         elif order == 1:
             # On vérifie qu'on est en mode autonome quand l'ordre est 1
@@ -150,6 +150,7 @@ class RobotMouvement:
             self.current_forward_speed = 0
     
     def setAngulaireSpeed(self, order):
+        # Fonction mettant à jour la commande de vitesse angulaire du robot en fonction de l'ordre reçu
         if order == 0:
             if self.generate_new_direction:
                 if random.random() < 0.5:
@@ -236,7 +237,7 @@ class RobotMouvement:
 
 
     def move_command_linear(self, event=None):
-
+        # Fonction gérant le mouvement linéaire du robot en mode non autonome (avec un goal)
         inc_x = self.goal.pose.position.x - self.x       # distance robot-goal en x
         inc_y = self.goal.pose.position.y - self.y       # distance robot-goal en y
         self.dist = sqrt(pow(inc_x, 2) + pow(inc_y, 2))  # calcul distance
@@ -261,7 +262,7 @@ class RobotMouvement:
 
 
     def move_command_angular(self, event=None):
-
+        # Fonction gérant le mouvement angulaire du robot en mode non autonome (avec un goal)
         inc_x = self.goal.pose.position.x - self.x      # distance robot-goal en x
         inc_y = self.goal.pose.position.y - self.y      # distance robot-goal en y
         angle_to_goal = atan2(inc_y, inc_x)             # calcul de l'angle pour atteindre le goal

@@ -30,9 +30,6 @@ hiBadge=np.array([6, 255, 255])             #Badge bouteille noire (Max)
 lowRuban = np.array([0, 0, 230])            #Ruban bouteille noire (Min)
 hiRuban = np.array([255, 100, 255])         #Ruban bouteille noire (Max)
 
-# lowOrangeBottle = np.array([0, 200, 200])   #Bouteille orange (Min)
-# hiOrangeBottle = np.array([25, 255, 255])   #Bouteille orange (Min)
-
 lowOrangeBottle = np.array([0, 230, 230])   #Bouteille orange (Min)
 hiOrangeBottle = np.array([25, 255, 255])   #Bouteille orange (Min)
 
@@ -105,11 +102,6 @@ class bottleFinder:
             #Conversion couleur en HSV
             img_hsv = cv2.cvtColor(thresholded_color, cv2.COLOR_BGR2HSV)
 
-            #Mask Badge (Double seuillage puis amelioration)
-            # maskBadge=cv2.inRange(img_hsv, lowBadge, hiBadge)
-            # maskBadge=cv2.erode(maskBadge, None, iterations=1)
-            # maskBadge=cv2.dilate(maskBadge, None, iterations=1)
-
             #Mask Ruban (Double seuillage puis amelioration)
             maskRuban=cv2.inRange(img_hsv, lowRuban, hiRuban)   
             maskRuban=cv2.erode(maskRuban, None, iterations=1)
@@ -119,10 +111,6 @@ class bottleFinder:
             maskBouteilleOrange=cv2.inRange(img_hsv, lowOrangeBottle, hiOrangeBottle)
             maskBouteilleOrange=cv2.erode(maskBouteilleOrange, None, iterations=3)
             maskBouteilleOrange=cv2.dilate(maskBouteilleOrange, None, iterations=3)
-
-            #Combinaison des masks
-            # mask = cv2.add(maskRuban, maskBouteilleOrange)
-            # mask = cv2.add(maskBadge, maskRuban)
             mask = maskBouteilleOrange
 
             #Extraction des zones d'interets
@@ -147,12 +135,6 @@ class bottleFinder:
                     x_cnt_bottle = int(bbox_bottle[0] + bbox_bottle[2] // 2)
                     y_cnt_bottle = int(bbox_bottle[1] + bbox_bottle[3] // 2)
                     center_bottle = (x_cnt_bottle, y_cnt_bottle)
-
-                    #Display centre bouteille
-                    # radius = 10
-                    # color = (255, 0, 0)
-                    # thickness = 2
-                    # image = cv2.circle(img_result, center_bottle, radius, color, thickness)
 
                     #Conversion des coordonnées de la bouteille sur l'image en coordonnées par rapport à "camera_color_optical_frame"
                     self.camera.fromCameraInfo(self.camera_info)
