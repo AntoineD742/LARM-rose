@@ -71,10 +71,6 @@ class RobotMouvement:
         self.current_forward_speed = 0
         self.current_angular_speed = 0
 
-        self.last_order = None
-        self.blocked = False
-        self.compteur = 0
-
         # Publisher
         self.commandPublisher = rospy.Publisher("/cmd_vel_mux/input/navi", Twist, queue_size = 10)   
         # Subscriber
@@ -102,7 +98,6 @@ class RobotMouvement:
         order = self.decisionMouvement(data)
         self.setFwdSpeed(order)
         self.setAngulaireSpeed(order)
-        self.last_order = order
         self.cmd.linear.x = self.current_forward_speed
         self.cmd.angular.z = self.current_angular_speed
         self.commandPublisher.publish(self.cmd)
@@ -127,7 +122,7 @@ class RobotMouvement:
         except CvBridgeError as e:
             print(e)
 
-    
+
     
     def setFwdSpeed(self, order): 
         if order == 0:
@@ -170,17 +165,6 @@ class RobotMouvement:
             self.current_angular_speed = -VITESSE_ANGULAIRE_ROBOT_MIN
         elif order == 3:
             self.current_angular_speed = +VITESSE_ANGULAIRE_ROBOT_MIN
-        elif order == 6:
-            self.current_angular_speed = VITESSE_ANGULAIRE_ROBOT_MIN*(PI-self.theta)
-            if abs(PI - self.theta) < 0.1:
-            # Une fois que le robot a fait son demi-tour, le robot n'est plus bloqué
-                self.blocked = False
-                self.compteur = 0
-        elif self.last_order == 4 and order == 5 or self.last_order == 5 and order == 4:
-            self.compteur += 1
-            if self.compteur == 20:
-                # Si compteur = 10 on considère que le robot est bloqué
-                self.blocked = True
         elif order == 4:
             self.current_angular_speed = -VITESSE_ANGULAIRE_ROBOT_MAX
         elif order == 5:
@@ -198,13 +182,9 @@ class RobotMouvement:
         #3 OBJET LOINTAIN SUR LA DROITE
         #4 OBJET PROCHE SUR LA GAUCHE
         #5 OBJET PROCHE SUR LA DROITE
-        #6 ROBOT BLOQUE
         
         if(self.depth_obstacle_ahead):
             return 0
-
-        if(self.blocked):
-            return 6
 
         #Calcul des distances
         obstacles= []
@@ -231,10 +211,10 @@ class RobotMouvement:
                 return 4                            # obstacle proche à gauche, tournez à droite
             elif -MIN_DISTANCE_Y < obstacles[index_min][1] < 0:
                 return 5                           # obstacle proche  à droite, tournez à gauche
-        elif obstacles[index_min][0] < AVOID_DISTANCE_X and obstacles[index_min][0] > 0:
+        elif obstacles[index_min][0] < AVOID_DISTANCE_X and obstacles[index_min][0] > 0 and self.autonome_mode:
             if 0 <= obstacles[index_min][1] < AVOID_DISTANCE_Y:
                 return 2                            # obstacle lointain à gauche, tournez à droite
-            elif -AVOID_DISTANCE_Y < obstacles[index_min][1] < 0:
+            elif -AVOID_DISTANCE_Y < obstacles[index_min][1] < 0 and self.autonome_mode:
                 return 3                            # obstacle lointain à droite, tournez à gauche
         return 1                            # pas d'obstacle, continuer à avancer
 
