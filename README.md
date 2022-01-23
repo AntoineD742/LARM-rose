@@ -2,6 +2,8 @@
 
 Bienvenue sur notre branche concernant le challenge 3 de l'UV LARM !
 
+Vous trouverez la vidéo de présentation de ce challenge sur ce [lien](https://youtu.be/0GPhfyYbO0Y).
+
 ## Installation
 
 Récupérez notre code :
@@ -16,7 +18,7 @@ git checkout challenge3
 
 ## Dépendances
 
-**Attention** pour que tout fonctionne normalement il est nécessaire d'installer sur votre machine le package **`mb6-bot`**. Pour l'installer veuillez suivre les consignes disponibles avec ce lien :
+**Attention** pour que tout fonctionne normalement il est nécessaire d'installer sur votre machine le package **`mb6-bot`**. Pour l'installer, veuillez suivre les consignes disponibles avec ce lien :
 https://bitbucket.org/imt-mobisyst/mb6-tbot/src/master/
 
 Il faut aussi installer les **`drivers`** et les **`packages`** ros liés à la caméra **`RealSense`**.
